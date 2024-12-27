@@ -47,7 +47,6 @@ flattenCorrMatrix <- function(cormat, pmat) {
     )
 }
 
-
 # Set up correlation function
 GenCorr <- function(df){
   df.cor <- rcorr(as.matrix(df), type = "pearson")
@@ -72,17 +71,11 @@ collapse_rows_df <- function(df, variable){
       mutate(!!quo_name(group_var):= ifelse(groupRow == 1, as.character(!! group_var), "")) %>%
       select(-c(groupRow))
 }
-
-
-
 ```
 
 
 ```{r load_data}
-
 # Load in .csv
-
-
 data <- read.csv("MaiaData_CardSort.csv")
 data
 ```
