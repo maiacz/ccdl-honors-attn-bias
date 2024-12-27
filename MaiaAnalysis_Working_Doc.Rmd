@@ -1,0 +1,1308 @@
+---
+title: "Maia Analysis"
+author: "Maia Czerwonka"
+date: "2024-02-27"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: cosmo
+  pdf_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+rm(list=ls())
+
+# Packages:
+library(tidyverse)  # Data manipulation and visualization
+library(dplyr)      # Tabular data manipulation
+library(tidyr)      # Data manipulation
+library(naniar)     # Handles missing values
+library(readxl)     # Import Microsoft Excel files
+library(writexl)
+library(ggplot2)    # Data visualization
+library(ggthemes)   # Additional ggplot2 themes and scales
+#library(ggExtra)    # Additional ggplot2 functions, enhances ggplot2 graphs
+library(ggpubr)     # Additional ggplot2 functions, creates publication-ready plots
+library(kableExtra) # Additional kable table functions
+library(purrr)      # Loops and iterations of functions
+library(effsize)    # Cohen's D calculation
+library(Hmisc)      #rcorr function
+library(car)        #Levenes test
+library(reshape2)   # melt function
+
+# Set up correlation matrix function
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+
+# Set up correlation function
+GenCorr <- function(df){
+  df.cor <- rcorr(as.matrix(df), type = "pearson")
+  df.cormat <- flattenCorrMatrix(round(df.cor$r, 3), round(df.cor$P, 3))
+  df.cormat$p_fdr <- p.adjust(df.cormat$p, method = "fdr", n = length(df.cormat$p))
+  # Make table with fdr corrected p-values highlighted
+kable(df.cormat) %>%#
+  kable_styling(bootstrap_options = c("hover", "striped")) %>%
+  row_spec(which(df.cormat$p <0.1), bold = T, color = "black", background = "pink")%>%
+  row_spec(which(df.cormat$p <0.05), bold = T, color = "black", background = "#ffffcc")%>%
+  row_spec(which(df.cormat$p <0.01), bold = T, color = "black", background = "#c2e699")
+}
+
+# Function to group rows in kbl tables.
+collapse_rows_df <- function(df, variable){
+  group_var <- enquo(variable)
+    
+  df %>% 
+      group_by(!! group_var) %>%
+      mutate(groupRow = 1:n()) %>%
+      ungroup() %>%
+      mutate(!!quo_name(group_var):= ifelse(groupRow == 1, as.character(!! group_var), "")) %>%
+      select(-c(groupRow))
+}
+
+
+
+```
+
+
+```{r load_data}
+
+# Load in .csv
+
+
+data <- read.csv("MaiaData_CardSort.csv")
+data
+```
+
+# Descriptives of Dataset
+
+```{r cars}
+
+data %>%
+  select(-c(Subject, Sex)) %>%
+  psych::describe()
+
+```   
+
+# Distributions of Bias Scores
+```{r bias_histo}
+
+biasMean <- mean(data$BiasScore, na.rm = T)
+biasMedian <- median(data$BiasScore, na.rm = T)
+
+bias1sd <- biasMean + sd(data$BiasScore)
+biasneg1sd <- biasMean - sd(data$BiasScore)
+
+
+data %>%
+  ggplot(aes(x=BiasScore)) +
+  geom_histogram(fill = "grey", color = "black") +
+  geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", size = 1) +
+  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", size = 1) +
+   geom_vline(mapping = aes(xintercept = bias1sd), color = "black", linetype = "dashed", size = 1) +
+   geom_vline(mapping = aes(xintercept = biasneg1sd), color = "black", linetype = "dashed", size = 1) +
+  ggtitle("Distribution of Bias Scores")
+
+data %>%
+  ggplot(aes(x=BiasScore)) +
+  geom_density(fill = "grey", color = "black") +
+   geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", size = 1) +
+  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", size = 1) +
+  ggtitle("Distribution of Bias Scores")
+
+
+```
+#A lot less neutral people than biased people
+
+# Distributions of Incongruency Effect - Whole Group & Bias Split
+```{r inconeffect_dist}
+# Whole group distribution of incongruency effect
+
+data %>%
+  ggplot(aes(x=Incon.ConRT)) +
+  geom_histogram(fill = "grey", color = "black") +
+  ggtitle("Distribution of Incongruency Rt Effects")
+
+data %>%
+  ggplot(aes(x=InCon_RT)) +
+  geom_histogram(fill = "grey", color = "black") +
+  ggtitle("Distribution of Incongruency RT")
+
+data %>%
+  ggplot(aes(x=Con_RT)) +
+  geom_histogram(fill = "grey", color = "black") +
+  ggtitle("Distribution of Congruency RT")
+
+
+
+# Split groups based on bias score
+biased <- subset(data, data$BiasScore > 0.8 | data$BiasScore < -0.8)
+neutral <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
+
+biased$Group = "biased"
+neutral$Group = "neutral"
+
+data_grouped <- rbind(biased, neutral)
+
+data_grouped %>%
+  ggplot(aes(x = BiasScore, fill = Group))+ geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", size = 1) +
+  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", size = 1) +
+  geom_histogram(color="black") + ggtitle("Bias Group Split Distribution")
+
+
+data_grouped %>%
+  ggplot(aes(x = Incon.ConRT, fill = Group, color = Group))+
+  geom_density(alpha = 0.3)+
+  ggtitle("Distribution of Incongruency RT Effects By Bias Group Split")
+
+data_grouped %>%
+  ggplot(aes(x = InCon_RT, fill = Group, color = Group))+
+  geom_density(alpha = 0.3)+
+  ggtitle("Distribution of Incongruent RT By Bias Group Split")
+
+neutral_incon_mean = mean(neutral$InCon_RT)
+neutral_con_mean = mean(neutral$Con_RT)
+biased_incon_mean = mean(biased$InCon_RT)
+biased_con_mean = mean(biased$Con_RT)
+
+
+data_grouped %>%
+  ggplot(aes(x = InCon_RT, fill = Group, color = Group))+                                  
+  geom_density(alpha = 0.3)+geom_vline(mapping = aes(xintercept = neutral_incon_mean), color = "turquoise", linetype = "dashed", size = 1)+ geom_vline(mapping = aes(xintercept = biased_incon_mean), color = "magenta", linetype = "dashed", size = 1)+
+  ggtitle("Distribution of Incongruent RT By Bias Group Split")
+
+data_grouped %>%
+  ggplot(aes(x = Con_RT, fill = Group, color = Group))+
+  geom_density(alpha = 0.3)+
+  ggtitle("Distribution of Congruent RT By Bias Group Split")
+
+data_grouped %>%
+  ggplot(aes(x = Con_RT, fill = Group, color = Group))+
+  geom_density(alpha = 0.3)+geom_vline(mapping = aes(xintercept = neutral_con_mean), color = "turquoise", linetype = "dashed", size = 1)+ geom_vline(mapping = aes(xintercept = biased_con_mean), color = "magenta", linetype = "dashed", size = 1)+
+  ggtitle("Distribution of Congruent RT By Bias Group Split")
+
+
+```
+#Incongruency RT Effect Dist: Most people have an incongruency effect of 0 or > so, as expected, incongruent trial reaction times are generally greater than congruent trial reaction times. Slight right skew that is made extreme by outliers- will reexamine with outliers removed.
+#Distribution of Incongruency Effect by Bias Group Split: There are more people who have a lower incongruency effect in the biased attender group than in the neutral attender group. Neutral attender group has a lot less people but its density is a lot more spread out while biased attender incongruency effect has a lot less range and is more concentrated near 0.
+#Congruent and Incongruent Distributions by Bias Group Split: Biased group seems to be taking less time than the neutral group in both trial types. Could be indication of biased attenders mainly paying attention to their preferred information processing style and ignoring the other stimulus so RTs are faster in both trial types.
+
+# Reaction times by trial type and attention
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(ggplot2)
+library(reshape2) 
+
+data$Attention <- ifelse(data$BiasScore > 0.8 | data$BiasScore < -0.8, "Biased", "Neutral")
+data$IPS <- ifelse(data$BiasScore > 0, "Verbal", "Visual")
+
+#Reaction times
+#Biased attender histograms and descriptive statistics
+biased_data<- data[data$Attention == "Biased", ]
+neutral_data<- data[data$Attention == "Neutral", ]
+
+# Combine biased and neutral data
+data$Attention <- ifelse(data$BiasScore > 0.8 | data$BiasScore < -0.8, "Biased", "Neutral")
+biased_data<- data[data$Attention == "Biased", ]
+combined_data <- rbind(biased_data, neutral_data)
+
+# Calculate means by attention and trial type
+means <- combined_data %>%
+  group_by(Attention) %>%
+  summarise(Con_RT = mean(Con_RT), InCon_RT = mean(InCon_RT)) %>%
+  pivot_longer(cols = c(Con_RT, InCon_RT), names_to = "Trial_Type", values_to = "RT")
+
+# Order factor levels for better plotting
+means$Attention <- factor(means$Attention, levels = unique(means$Attention))
+
+combined_long <- combined_data %>%
+  select(Attention, InCon_RT, Con_RT) %>%
+  pivot_longer(cols = c(InCon_RT, Con_RT), values_to = "RT", names_to = "Condition")
+
+# Creat error bars
+se_sum <- combined_long %>%
+  group_by(Attention, Condition) %>%
+  summarise(
+    sd = sd(RT),
+    n = n(),
+    mean = mean(RT)
+  ) %>%
+  mutate(se = sd/sqrt(n))
+
+
+
+# Create bar plot
+
+ggplot(se_sum, aes(x = Attention, y = mean, fill = Condition)) +
+  geom_bar(position = position_dodge(0.8), stat = "identity", color = "black", size = 0.5, width = 0.8, alpha = 0.8) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se), position = position_dodge(0.8), width = 0.25, color = "black") +
+  labs(title = "Mean Reaction Times by Attention and Trial Type",
+       x = "Attention",
+       y = "Mean Reaction Time (ms)") +
+  theme_minimal()
+
+combined_long_wid <- combined_data %>%
+  select(Attention, InCon_RT, Con_RT, Subject) %>%
+  pivot_longer(cols = c(InCon_RT, Con_RT), values_to = "RT", names_to = "Condition")
+
+```
+#incon rts are larger overall, but the difference between incon and con trial rts for the biased group is a lot smaller than the neutral group- perhaps because the neutral group is noticing both stimuli more?
+#figure out how to put error bars
+
+# Incongruency Effect Analysis
+
+## Incongruency Effect Descriptives
+```{r}
+
+# Incongruency Effect Calculation
+data$IncongruencyEffect <- data$InCon_RT - data$Con_RT
+Incongruency_Effect_Data <- data$IncongruencyEffect
+
+biased_data$Incongruency_Effect_Data <- biased_data$InCon_RT - biased_data$Con_RT
+neutral_data$Incongruency_Effect_Data <- neutral_data$InCon_RT - neutral_data$Con_RT
+
+```
+
+### Biased group descriptives
+```{r}
+
+psych::describe(biased_data$Incongruency_Effect_Data)
+
+
+```
+
+### Neutral group descriptives
+```{r}
+psych::describe(neutral_data$Incongruency_Effect_Data)
+
+```
+
+```{r}
+
+# Biased Attender Incongruency Effect Descriptive Statistics
+biased_IE_mean <- mean(biased_data$Incongruency_Effect_Data)
+biased_IE_std <- sd(biased_data$Incongruency_Effect_Data)
+biased_IE_min <- min(biased_data$Incongruency_Effect_Data)
+biased_IE_max <- max(biased_data$Incongruency_Effect_Data)
+
+# Data frame for Biased Attender Incongruency Effect Descriptive Statistics
+biased_descriptive_IE <- data.frame(
+  Attention = "Biased",  
+  Variable = "Incongruency Effect",
+  Mean = biased_IE_mean,
+  StdDev = biased_IE_std,
+  Min = biased_IE_min,
+  Max = biased_IE_max,
+  stringsAsFactors = FALSE
+)
+
+# Neutral Attender Incongruency Effect Descriptive Statistics
+neutral_IE_mean <- mean(neutral_data$Incongruency_Effect_Data)
+neutral_IE_std <- sd(neutral_data$Incongruency_Effect_Data)
+neutral_IE_min <- min(neutral_data$Incongruency_Effect_Data)
+neutral_IE_max <- max(neutral_data$Incongruency_Effect_Data)
+
+# Data frame for Neutral Attender Incongruency Effect Descriptive Statistics
+neutral_descriptive_IE <- data.frame(
+  Attention = "Neutral",  
+  Variable = "Incongruency Effect",
+  Mean = neutral_IE_mean,
+  StdDev = neutral_IE_std,
+  Min = neutral_IE_min,
+  Max = neutral_IE_max,
+  stringsAsFactors = FALSE
+)
+
+descriptive_statistics_IE <- rbind(biased_descriptive_IE, neutral_descriptive_IE)
+print(descriptive_statistics_IE)
+```
+## Incongruency Effect Box Plot
+```{r}
+# Load necessary libraries
+library(ggplot2)
+
+# Combine biased and neutral data for the box plot
+combined_data <- rbind(biased_data, neutral_data)
+
+# Create box plot
+ggplot(combined_data, aes(x = Attention, y = Incongruency_Effect_Data, fill = Attention)) +
+  geom_boxplot() +
+  labs(
+    title = "Incongruency Effect Box Plot",
+    x = "Attention",
+    y = "Incongruency Effect (ms)"
+  ) +
+  scale_fill_manual(values = c("red", "lightblue")) +  # Color for biased and neutral data
+  theme_minimal()
+```
+## Incongruency Effect Scatter Plot
+
+```{r}
+# Scatter Plot of Incongruency Effect
+plot(neutral_data$Incongruency_Effect_Data, 
+     col = "blue", 
+     pch = 16, 
+     main = "Scatter Plot of Incongruency Effect",
+     xlab = "Incongruency Effect (ms)",
+     ylab = "Condition")
+
+# Adding Biased Attender Data Points
+points(biased_data$Incongruency_Effect_Data, 
+       col = "red", 
+       pch = 16)
+```
+
+
+
+# Individual Differences Analysis
+
+## Correlate Bias score in whole group with incongruency RT effect
+
+```{r}
+
+cor.test(data$BiasScore, data$Incon.ConRT)
+
+
+data %>%
+  ggplot(aes(x = BiasScore, y = Incon.ConRT)) +
+  geom_point(size = 3, alpha = 0.5, fill = "grey") +
+  geom_smooth(method = "lm")
+
+data$absBiasScore <- abs(data$BiasScore)
+
+cor.test(data$absBiasScore, data$Incon.ConRT)
+
+
+data %>%
+  ggplot(aes(x = absBiasScore, y = Incon.ConRT)) +
+  geom_point(size = 3, alpha = 0.5, fill = "grey") +
+  geom_smooth(method = "lm")
+
+```
+#doesn't look like much of a correlation, reexamine with outliers removed.
+
+```{r anova}
+combined_long_wid <- combined_data %>%
+  select(Attention, InCon_RT, Con_RT, Subject) %>%
+  pivot_longer(cols = c(InCon_RT, Con_RT), values_to = "RT", names_to = "Condition")
+
+#anova_test(data=combined_long_wid, dv=RT, wid=Subject, between=Attention, within = Condition)
+```
+
+## T-test code - with full data (keeping outliers)
+```{r}
+
+#   Difference in Incon-Con RT between Attention Groups
+
+biased<- data[data$Attention == "Biased", ]
+neutral<- data[data$Attention == "Neutral", ]
+
+#First test normality assumption in Neutral Group
+qqnorm(neutral$Incon.ConRT, pch = 1, frame = FALSE, main = "Neutral Group: Incon - Con RT")
+qqline(neutral$Incon.ConRT, col = "steelblue", lwd = 2)
+shapiro.test(neutral$Incon.ConRT) # Assumption of normality is violated; probably due to outliers
+
+#Then test normality assumption in Biased Group
+qqnorm(biased$Incon.ConRT, pch = 1, frame = FALSE, main = "Biased Group: Incon - Con RT")
+qqline(biased$Incon.ConRT, col = "darkred", lwd = 2)
+shapiro.test(biased$Incon.ConRT) # Assumption of normality is marginally violated
+
+#Check that the variance does not differ between groups
+# Perform Levene's AT_FormTest
+print(leveneTest(Incon.ConRT ~ Attention, data = combined_data)) # Variances are marginally different; assumption holds
+
+
+# Conduct t-test with equal variance assumption
+print(t.test(neutral$Incon.ConRT, biased$Incon.ConRT, var.equal = F)) # T-Test is significant after correwction for unequal variances 
+
+```
+```{r outliers in dataset congruent rt t-test }
+# test normality
+qqnorm(neutral$Con_RT, pch = 1, frame = FALSE, main = "Neutral Group: Con RT")
+qqline(neutral$Con_RT, col = "steelblue", lwd = 2)
+shapiro.test(neutral$Con_RT) #assumption of normality violated
+
+qqnorm(biased$Con_RT, pch = 1, frame = FALSE, main = "Biased Group: Con RT")
+qqline(biased$Con_RT, col = "darkred", lwd = 2)
+shapiro.test(biased$Con_RT)
+
+# check if variance differs between groups
+print(leveneTest(Con_RT ~ Attention, data = combined_data)) #assumption of homogeneity violated
+
+#do t-test
+print(t.test(neutral$Con_RT, biased$Con_RT, var.equal = F))
+```
+```{r outliers in dataset incongruent rt ttest}
+# test normality
+qqnorm(neutral$InCon_RT, pch = 1, frame = FALSE, main = "Neutral Group: InCon RT")
+qqline(neutral$InCon_RT, col = "steelblue", lwd = 2)
+shapiro.test(neutral$InCon_RT) 
+
+qqnorm(biased$InCon_RT, pch = 1, frame = FALSE, main = "Biased Group: InCon RT")
+qqline(biased$InCon_RT, col = "darkred", lwd = 2)
+shapiro.test(biased$InCon_RT) #assumption of normality violated
+
+# check if variance differs between groups
+print(leveneTest(InCon_RT ~ Attention, data = combined_data))   #assumption of homogeneity not violated
+
+#do t-test
+print(t.test(neutral$InCon_RT, biased$InCon_RT, var.equal = T))
+```
+
+# Removing Outliers InCon RT
+
+```{r remove incon rt outliers}
+
+Incon_minus3SD <- mean(data$InCon_RT) - (3* sd(data$InCon_RT))
+Incon_plus3SD <- mean(data$InCon_RT) + (3* sd(data$InCon_RT))
+
+data <- data %>%
+  mutate(InconOutlier = InCon_RT >= Incon_plus3SD)
+
+outliers_subset = subset(data, data$InconOutlier == TRUE)
+
+
+data_outliersremoved <- subset(data, data$InconOutlier == FALSE)
+```
+
+## InCon Outliers Removed Descriptives
+```{r outliers removed descriptives}
+data_outliersremoved %>%
+  select(-c(Subject, Sex)) %>%
+  psych::describe()
+```
+#now that outliers are removed, incon effect mean went from 101.74 to 74.99.
+
+## Distributions of Incongruency Effect - Whole Group & Bias Split (InCon Outliers Removed)
+```{r}
+data_outliersremoved %>%
+  ggplot(aes(x=Incon.ConRT)) +
+  geom_histogram(fill = "grey", color = "black") +
+  ggtitle("Distribution of Incongruency Rt Effects (Outliers Removed)")
+
+data_outliersremoved %>%
+  ggplot(aes(x=InCon_RT)) +
+  geom_histogram(fill = "grey", color = "black") +
+  ggtitle("Distribution of Incongruency RT (Outliers Removed)")
+
+data_outliersremoved %>%
+  ggplot(aes(x=Con_RT)) +
+  geom_histogram(fill = "grey", color = "black") +
+  ggtitle("Distribution of Congruency RT (Outliers Removed)")
+
+biased <- subset(data_outliersremoved, data_outliersremoved$BiasScore > 0.8 | data_outliersremoved$BiasScore < -0.55)
+neutral <- subset(data_outliersremoved, data_outliersremoved$BiasScore <= 0.8 & data_outliersremoved$BiasScore >= -0.55)
+
+data_grouped <- rbind(biased, neutral)
+
+data_grouped %>%
+  ggplot(aes(x = Incon.ConRT, fill = Attention, color = Attention))+
+  geom_density(alpha = 0.3)+
+  ggtitle("Distribution of Incongruency RT Effects By Bias Group Split")
+
+data_grouped %>%
+  ggplot(aes(x = InCon_RT, fill = Attention, color = Attention))+
+  geom_density(alpha = 0.3)+
+  ggtitle("Distribution of Incongruent RT By Bias Group Split")
+
+data_grouped %>%
+  ggplot(aes(x = Con_RT, fill = Attention, color = Attention))+
+  geom_density(alpha = 0.3)+
+  ggtitle("Distribution of Congruent RT By Bias Group Split")
+# Incon effect dist: Most people seem to fall between 0 and 250 ms incongruency effect- incongruent trials taking longer!
+```
+
+## Reaction times by trial type and attention (InCon Outliers Removed)
+```{r}
+data_outliersremoved$Attention <- ifelse(data_outliersremoved$BiasScore > 0.8 | data_outliersremoved$BiasScore < -0.55, "Biased", "Neutral")
+data_outliersremoved$IPS <- ifelse(data_outliersremoved$BiasScore > 0, "Verbal", "Visual")
+
+# Reaction times
+# Biased attender histograms and descriptive statistics
+biased_data <- data_outliersremoved[data_outliersremoved$Attention == "Biased", ]
+neutral_data <- data_outliersremoved[data_outliersremoved$Attention == "Neutral", ]
+
+# Combine biased and neutral data
+data_outliersremoved$Attention <- ifelse(data_outliersremoved$BiasScore > 0.8 | data_outliersremoved$BiasScore < -0.55, "Biased", "Neutral")
+biased_data <- data_outliersremoved[data_outliersremoved$Attention == "Biased", ]
+combined_data <- rbind(biased_data, neutral_data)
+
+# Calculate means by attention and trial type
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+means <- combined_data %>%
+  group_by(Attention) %>%
+  summarise(Con_RT = mean(Con_RT, na.rm = TRUE), InCon_RT = mean(InCon_RT, na.rm = TRUE)) %>%
+  pivot_longer(cols = c(Con_RT, InCon_RT), names_to = "Trial_Type", values_to = "RT")
+
+# Order factor levels for better plotting
+means$Attention <- factor(means$Attention, levels = unique(means$Attention))
+
+combined_long <- combined_data %>%
+  select(Attention, InCon_RT, Con_RT) %>%
+  pivot_longer(cols = c(InCon_RT, Con_RT), values_to = "RT", names_to = "Condition")
+
+# Create error bars
+se_sum <- combined_long %>%
+  group_by(Attention, Condition) %>%
+  summarise(
+    sd = sd(RT, na.rm = TRUE),
+    n = n(),
+    mean = mean(RT, na.rm = TRUE)
+  ) %>%
+  mutate(se = sd/sqrt(n))
+
+# Create bar plot
+ggplot(se_sum, aes(x = Attention, y = mean, fill = Condition)) +
+  geom_bar(position = position_dodge(0.8), stat = "identity", color = "black", size = 0.5, width = 0.8, alpha = 0.8) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se), position = position_dodge(0.8), width = 0.25, color = "black") +
+  labs(title = "Mean Reaction Times by Attention and Trial Type",
+       x = "Attention",
+       y = "Mean Reaction Time (ms)") +
+  theme_minimal()
+
+```
+## Incongruency Effect Box Plot (InCon Outliers Removed)
+```{r}
+biased_data<- data_outliersremoved[data_outliersremoved$Attention == "Biased", ]
+neutral_data<- data_outliersremoved[data_outliersremoved$Attention == "Neutral", ]
+
+combined_data <- rbind(biased_data, neutral_data)
+Incongruency_Effect_Data <- data_outliersremoved$IncongruencyEffect
+
+# Create box plot
+ggplot(combined_data, aes(x = Attention, y = Incongruency_Effect_Data, fill = Attention)) +
+  geom_boxplot() +
+  labs(
+    title = "Incongruency Effect Box Plot",
+    x = "Attention",
+    y = "Incongruency Effect (ms)"
+  ) +
+  scale_fill_manual(values = c("red", "lightblue")) +  # Color for biased and neutral data
+  theme_minimal()
+```
+## Bias Score and Incongruency Effect Correlation (InCon Outliers Removed)
+```{r}
+data_outliersremoved %>%
+  ggplot(aes(x = BiasScore, y = Incon.ConRT)) +
+  geom_point(size = 3, alpha = 0.5, fill = "grey") +
+  geom_smooth(method = "lm")
+
+cor.test(data_outliersremoved$BiasScore, data_outliersremoved$Incon.ConRT)
+```
+## t-test (InCon Outliers Removed)
+```{r}
+t.test(Incon.ConRT~Attention, data=data_outliersremoved)
+```
+# T-test Code - Removing Incon Outliers
+```{r}
+biased_data<- data_outliersremoved[data_outliersremoved$Attention == "Biased", ]
+neutral_data<- data_outliersremoved[data_outliersremoved$Attention == "Neutral", ]
+
+qqnorm(neutral_data$Incon.ConRT, pch = 1, frame = FALSE, main = "Neutral Group: Incon - Con RT (Outliers Removed)")
+qqline(neutral_data$Incon.ConRT, col = "steelblue", lwd = 2)
+shapiro.test(neutral_data$Incon.ConRT)
+
+# Then test normality assumption in Biased Group
+qqnorm(biased_data$Incon.ConRT, pch = 1, frame = FALSE, main = "Biased Group: Incon - Con RT (Outliers Removed)")
+qqline(biased_data$Incon.ConRT, col = "darkred", lwd = 2)
+shapiro.test(biased_data$Incon.ConRT) 
+
+# Check that the variance does not differ between groups
+# Perform Levene's Test
+print(leveneTest(Incon.ConRT ~ Attention, data = data_outliersremoved)) 
+
+# Conduct t-test with equal variance assumption
+print(t.test(neutral_data$Incon.ConRT, biased_data$Incon.ConRT, var.equal = FALSE)) 
+
+```
+# Removing outliers- Congruent RT
+```{r}
+
+Con_minus3SD <- mean(data_outliersremoved$Con_RT) - (3* sd(data_outliersremoved$Con_RT))
+Con_plus3SD <- mean(data_outliersremoved$Con_RT) + (3* sd(data_outliersremoved$Con_RT))
+
+data_outliersremoved <- data_outliersremoved %>%
+  mutate(ConOutlier = Con_RT >= Con_plus3SD)
+
+subset(data_outliersremoved, ConOutlier == TRUE)
+
+data_final <- subset(data_outliersremoved, ConOutlier == FALSE)
+
+```
+# T-test with All Outliers Removed
+```{r}
+biased_data <- data_final[data_final$Attention == "Biased", ]
+neutral_data <- data_final[data_final$Attention == "Neutral", ]
+
+qqnorm(neutral_data$Incon.ConRT, pch = 1, frame = FALSE, main = "Neutral Group: Incon - Con RT (Outliers Removed)")
+qqline(neutral_data$Incon.ConRT, col = "steelblue", lwd = 2)
+shapiro.test(neutral_data$Incon.ConRT)
+
+# Then test normality assumption in Biased Group
+qqnorm(biased_data$Incon.ConRT, pch = 1, frame = FALSE, main = "Biased Group: Incon - Con RT (Outliers Removed)")
+qqline(biased_data$Incon.ConRT, col = "darkred", lwd = 2)
+shapiro.test(biased_data$Incon.ConRT) 
+
+# Check that the variance does not differ between groups
+# Perform Levene's Test
+print(leveneTest(Incon.ConRT ~ Attention, data = data_final)) 
+
+# Conduct t-test with equal variance assumption
+print(t.test(neutral_data$Incon.ConRT, biased_data$Incon.ConRT, var.equal = FALSE)) 
+
+```
+## splitting blocks
+# block data
+```{r block data}
+block_data <- read.csv("CardSort Data.csv")
+
+for_calc = data.frame(Subject = character(), block1_mean = numeric(), block2_mean = numeric(), block3_mean = numeric(), block4_mean = numeric(), block1_bias = numeric(), block2_bias = numeric(), block3_bias = numeric(), block4_bias = numeric())
+
+for (subject in unique(data$Subject)){
+  subject_cols = block_data[block_data$SubjectNumber == subject, ]
+  subject_block1 <- subject_cols[subject_cols$"Block" == "CardSort_Block1",]
+  subject_block2 <- subject_cols[subject_cols$"Block" == "CardSort_Block2",]
+  subject_block3 <- subject_cols[subject_cols$"Block" == "CardSort_Block3",]
+  subject_block4 <- subject_cols[subject_cols$"Block" == "CardSort_Block4",]
+
+  block1_mean <- mean(subject_block1$RT)
+  block2_mean <- mean(subject_block2$RT)
+  block3_mean <- mean(subject_block3$RT)
+  block4_mean <- mean(subject_block4$RT)
+  
+  block1_incon_rows <- subset(subject_block1, Status == 2)
+  block1_word <- max(subject_block1$TxtRespCount)
+  block1_pic <- max(subject_block1$SymRespCount)
+  block1_correct <- length(block1_incon_rows) - max(subject_block1$IncorrRespCount)
+  block1_bias <- (block1_word - block1_pic) / block1_correct
+  
+  block2_incon_rows <- subset(subject_block2, Status == 2)
+  block2_word <- max(subject_block2$TxtRespCount)-max(subject_block1$TxtRespCount)
+  block2_pic <- max(subject_block2$SymRespCount)- max(subject_block1$SymRespCount)
+  block2_correct <- length(block2_incon_rows) - (max(subject_block2$IncorrRespCount)-max(subject_block1$IncorrRespCount))
+  block2_bias <- (block2_word - block2_pic) / block2_correct
+  
+  block3_incon_rows <- subset(subject_block3, Status == 2)
+  block3_word <- max(subject_block3$TxtRespCount)-max(subject_block2$TxtRespCount)
+  block3_pic <- max(subject_block3$SymRespCount)-max(subject_block2$SymRespCount)
+  block3_correct <- length(block3_incon_rows) - (max(subject_block3$IncorrRespCount)-max(subject_block2$IncorrRespCount))
+  block3_bias <- (block3_word - block3_pic) / block3_correct
+  
+  block4_incon_rows <- subset(subject_block4, Status == 2)
+  block4_word <- max(subject_block4$TxtRespCount)-max(subject_block3$TxtRespCount)
+  block4_pic <- max(subject_block4$SymRespCount)-max(subject_block3$SymRespCount)
+  block4_correct <- length(block4_incon_rows) - (max(subject_block4$IncorrRespCount)-max(subject_block3$IncorrRespCount))
+  block4_bias <- (block4_word - block4_pic) / block4_correct
+  
+  new_row1 <- data.frame(Subject = subject, block1_mean = block1_mean, block2_mean =  block2_mean, block3_mean =  block3_mean, block4_mean =  block4_mean,    block1_bias = block1_bias, block2_bias = block2_bias, block3_bias = block3_bias, block4_bias = block4_bias)
+  
+  for_calc<- rbind(for_calc, new_row1)
+}
+
+data <- cbind(data, for_calc)
+
+
+# mean rts for each block biased v neutral
+biased_word <- subset(data, data$BiasScore > 0.8)
+biased_picture <- subset(data, data$BiasScore < -0.8)
+biased <- subset(data, data$BiasScore > 0.8 | data$BiasScore < -0.8)
+neutral <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
+
+biased_means <- colMeans(biased[, c("block1_bias", "block2_bias", "block3_bias", "block4_bias")], na.rm = TRUE)
+# Calculate means for neutral group
+neutral_means <- colMeans(neutral[, c("block1_bias", "block2_bias", "block3_bias", "block4_bias")], na.rm = TRUE)
+biased_word_means <- colMeans(biased_word[, c("block1_bias", "block2_bias", "block3_bias", "block4_bias")], na.rm = TRUE)
+biased_picture_means <- colMeans(biased_picture[, c("block1_bias", "block2_bias", "block3_bias", "block4_bias")], na.rm = TRUE)
+
+means_df <- data.frame(
+  Block = rep(c("Block 1", "Block 2", "Block 3", "Block 4"), 2),
+  MeanBias = c(biased_means, neutral_means),
+  Group = rep(c("Biased", "Neutral"), each = 4)
+)
+
+# subset of neutral 
+neutral_means_df <- subset(means_df, Group == "Neutral")
+
+# Plotting neutral blocks from means_df
+ggplot(neutral_means_df, aes(x = Block, y = MeanBias, group = Group, color = Group)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean Bias Scores for Neutral Group by Card Sort Block", x = "Block", y = "Mean Bias Score") +
+  scale_color_manual(values = c("Neutral" = "blue")) +
+  theme_minimal()
+
+# Creating means_df for two biased groups and one neutral group
+biased_means_df <- data.frame(
+  Block = rep(c("Block 1", "Block 2", "Block 3", "Block 4"), 3),
+  MeanBias = c(biased_word_means, biased_picture_means, neutral_means),
+  Group = rep(c("Biased Word", "Biased Picture", "Neutral"), each = 4)
+)
+
+#subset of word biased (positive)
+biased_word_means_df <- subset(biased_means_df, Group == "Biased Word")
+biased_picture_means_df <- subset(biased_means_df, Group == "Biased Picture")
+
+ggplot(biased_word_means_df, aes(x = Block, y = MeanBias, group = Group, color = Group)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean Bias Scores for Biased Group (Word) by Card Sort Block", x = "Block", y = "Mean Bias Score") +
+  scale_color_manual(values = c("Biased Word" = "blue")) +
+  theme_minimal()
+
+#subset of picture biased (negative)
+ggplot(biased_picture_means_df, aes(x = Block, y = MeanBias, group = Group, color = Group)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean Bias Scores for Biased Group (Picture) by Card Sort Block", x = "Block", y = "Mean Bias Score") +
+  scale_color_manual(values = c("Biased Picture" = "blue")) +
+  theme_minimal()
+
+ggplot() +
+  geom_line(data = biased_word_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Biased Word")) +
+  geom_point(data = biased_word_means_df, aes(x = Block, y = MeanBias, color = "Biased Word")) +
+  geom_line(data = biased_picture_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Biased Picture")) +
+  geom_point(data = biased_picture_means_df, aes(x = Block, y = MeanBias, color = "Biased Picture")) +
+  labs(title = "Mean Bias Scores for Biased Groups by Card Sort Block", x = "Block", y = "Mean Bias Score") +
+  scale_color_manual(name = "Group", values = c("Biased Word" = "purple", "Biased Picture" = "green")) +
+  theme_minimal()
+
+
+biased$block1_bias <- abs(biased$block1_bias)
+biased$block2_bias <- abs(biased$block2_bias)
+biased$block3_bias <- abs(biased$block3_bias)
+biased$block4_bias <- abs(biased$block4_bias)
+
+neutral$block1_bias <- abs(neutral$block1_bias)
+neutral$block2_bias <- abs(neutral$block2_bias)
+neutral$block3_bias <- abs(neutral$block3_bias)
+neutral$block4_bias <- abs(neutral$block4_bias)
+
+biased_means <- colMeans(biased[, c("block1_bias", "block2_bias", "block3_bias", "block4_bias")], na.rm = TRUE)
+
+# Calculate means for neutral group
+neutral_means <- colMeans(neutral[, c("block1_bias", "block2_bias", "block3_bias", "block4_bias")], na.rm = TRUE)
+
+# Combine the means into a new data frame for plotting
+means_df <- data.frame(
+  Block = rep(c("Block 1", "Block 2", "Block 3", "Block 4"), 2),
+  MeanBias = c(biased_means, neutral_means),
+  Group = rep(c("Biased", "Neutral"), each = 4)
+)
+
+
+ggplot(means_df, aes(x = Block, y = MeanBias, color = Group, group = Group)) +
+  geom_line() +  # Add lines
+  geom_point() + # Add points
+  labs(title = "Mean Absolute Bias Scores by Bias Group and Card Sort Block", x = "Block", y = "Mean Bias Score") +
+  scale_color_manual(values = c("Biased" = "red", "Neutral" = "blue")) +
+  theme_minimal()
+
+# Create the combined plot
+combined_plot <- ggplot() +
+  geom_line(data = neutral_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Neutral")) +
+  geom_point(data = neutral_means_df, aes(x = Block, y = MeanBias, color = "Neutral")) +
+  geom_line(data = biased_word_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Biased Word")) +
+  geom_point(data = biased_word_means_df, aes(x = Block, y = MeanBias, color = "Biased Word")) +
+  geom_line(data = biased_picture_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Biased Picture")) +
+  geom_point(data = biased_picture_means_df, aes(x = Block, y = MeanBias, color = "Biased Picture")) +
+  labs(title = "Mean Bias Scores for All Groups by Card Sort Block", x = "Block", y = "Mean Bias Score") +
+  scale_color_manual(name = "Group", values = c("Neutral" = "blue", "Biased Word" = "purple", "Biased Picture" = "green")) +
+  theme_minimal()
+
+# Display the combined plot
+print(combined_plot)
+
+
+# trying to make it with error bars
+# Step 1: Calculate descriptive statistics and store in a variable
+biased_word <- subset(data, data$BiasScore > 0.8)
+biased_picture <- subset(data, data$BiasScore < -0.8)
+neutral <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
+
+#biased word cleaning
+cleaned_biased_word <- biased_word %>%
+  select(-c(block1_mean.1, block2_mean.1, block3_mean.1, block4_mean.1, 
+            block1_bias.1, block2_bias.1, block3_bias.1, block4_bias.1, Subject.1))
+
+descriptives_biased_word <- cleaned_biased_word %>%
+  select(-c(Subject, Sex, InconOutlier,Attention)) %>%
+  psych::describe()
+
+# Convert the 'desc_df' to a regular dataframe
+bw_descdf <- as.data.frame(descriptives_biased_word)
+
+#biased picture cleaning
+
+cleaned_biased_pic <- biased_picture %>%
+  select(-c(block1_mean.1, block2_mean.1, block3_mean.1, block4_mean.1, 
+            block1_bias.1, block2_bias.1, block3_bias.1, block4_bias.1, Subject.1))
+
+descriptives_biased_pic <- cleaned_biased_pic %>%
+  select(-c(Subject, Sex, InconOutlier,Attention)) %>%
+  psych::describe()
+
+# Convert the 'desc_df' to a regular dataframe
+bp_descdf <- as.data.frame(descriptives_biased_pic)
+
+#cleaning neutral
+cleaned_neutral <- neutral %>%
+  select(-c(block1_mean, block2_mean, block3_mean, block4_mean, 
+            block1_bias, block2_bias, block3_bias, block4_bias, Subject))
+
+descriptives_neutral <- cleaned_neutral %>%
+  select(-c (Sex, InconOutlier,Attention)) %>%
+  psych::describe()
+
+# Convert the 'desc_df' to a regular dataframe
+n_descdf <- as.data.frame(descriptives_neutral)
+
+# Calculate SE for each block for biased word data
+bw_descdf$se <- bw_descdf$sd / sqrt(bw_descdf$n)
+
+# Calculate SE for each block for biased picture data
+bp_descdf$se <- bp_descdf$sd / sqrt(bp_descdf$n)
+
+# Calculate SE for each block for neutral data
+n_descdf$se <- n_descdf$sd / sqrt(n_descdf$n)
+
+neutral_means_df$se <- NA  # Create a new column for SE
+
+# Assuming order of SEs in 'n_descdf' corresponds to the blocks in 'neutral_means_df'
+neutral_means_df$se[neutral_means_df$Block == "Block 1"] <- n_descdf$se[5]  # BiasScore SE for Block 1
+neutral_means_df$se[neutral_means_df$Block == "Block 2"] <- n_descdf$se[5]  # BiasScore SE for Block 2
+neutral_means_df$se[neutral_means_df$Block == "Block 3"] <- n_descdf$se[5]  # BiasScore SE for Block 3
+neutral_means_df$se[neutral_means_df$Block == "Block 4"] <- n_descdf$se[5]  # BiasScore SE for Block 4
+
+
+# Adding error bars to the plot
+combined_plot <- ggplot() +
+  geom_line(data = neutral_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Neutral")) +
+  geom_point(data = neutral_means_df, aes(x = Block, y = MeanBias, color = "Neutral")) +
+  geom_errorbar(data = neutral_means_df, aes(x = Block, ymin = MeanBias - se, ymax = MeanBias + se, color = "Neutral"), width = 0.2) +
+  
+  geom_line(data = biased_word_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Biased Word")) +
+  geom_point(data = biased_word_means_df, aes(x = Block, y = MeanBias, color = "Biased Word")) +
+  geom_errorbar(data = biased_word_means_df, aes(x = Block, ymin = MeanBias - se, ymax = MeanBias + se, color = "Biased Word"), width = 0.2) +
+  
+  geom_line(data = biased_picture_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Biased Picture")) +
+  geom_point(data = biased_picture_means_df, aes(x = Block, y = MeanBias, color = "Biased Picture")) +
+  geom_errorbar(data = biased_picture_means_df, aes(x = Block, ymin = MeanBias - se, ymax = MeanBias + se, color = "Biased Picture"), width = 0.2) +
+  
+  labs(title = "Mean Bias Scores for All Groups by Card Sort Block", x = "Block", y = "Mean Bias Score") +
+  scale_color_manual(name = "Group", values = c("Neutral" = "blue", "Biased Word" = "purple", "Biased Picture" = "green")) +
+  theme_minimal()
+
+# Display the combined plot
+print(combined_plot)
+
+# Now you can proceed with adding error bars or plotting
+
+
+```
+```{r diff btwn blocks t-test}
+# Calculating changes between blocks for both groups
+change1_bias = biased_means["block2_bias"] - biased_means["block1_bias"]
+change2_bias = biased_means["block4_bias"] - biased_means["block3_bias"]
+
+change1_neutral = neutral_means["block2_bias"] - neutral_means["block1_bias"]
+change2_neutral = neutral_means["block4_bias"] - neutral_means["block3_bias"]
+
+changes_bias = c(change1_bias, change2_bias)
+changes_neutral = c(change1_neutral, change2_neutral)
+
+t_test_all_changes = t.test(changes_bias, changes_neutral, alternative = "two.sided", var.equal = TRUE)
+
+# Print the results
+print(t_test_all_changes)
+
+biased$block_diff <- abs(biased$block4_bias) - abs(biased$block1_bias)
+neutral$block_diff <- abs(neutral$block4_bias) - abs(neutral$block1_bias)
+
+# Perform t-test
+t_test_result <- t.test(biased$block_diff, neutral$block_diff, var.equal = FALSE)
+
+# Display the result
+t_test_result
+
+biased_ttest_b1 <- abs(biased$block1_bias)
+neutral_ttest_b2 <- abs(neutral$block1_bias)
+
+# Perform t-test
+t_test_result <- t.test(biased_ttest_b1, neutral_ttest_b2, var.equal = FALSE)
+
+# Display the result
+t_test_result
+
+```
+```{r block mean anova}
+#convert data frame to long format
+data <- data[, !duplicated(colnames(data))]
+data <- data %>%
+  mutate(Attention = ifelse(BiasScore > 0.8 | BiasScore < -0.8, "biased", "neutral"))
+
+   long_block_data <- data %>%
+    gather(key = "Condition", value = "BiasScore", block1_bias:block4_bias) %>%
+    mutate(Condition = gsub("_bias", "", Condition)) %>%
+    mutate(BiasScore = abs(BiasScore)) %>%
+    select(Attention, Subject, Condition, BiasScore)
+
+
+block_aov = anova_test(data=long_block_data, dv=BiasScore, wid=Subject, between=Attention, within = Condition)
+print(block_aov)
+
+data <- data[, !duplicated(colnames(data))]
+data <- data %>%
+  mutate(Attention = ifelse(BiasScore > 0.8 | BiasScore < -0.8, "biased", "neutral"))
+
+   long_block_data <- data %>%
+    gather(key = "Condition", value = "BiasScore", block1_bias:block2_bias) %>%
+    mutate(Condition = gsub("_bias", "", Condition)) %>%
+    mutate(BiasScore = abs(BiasScore)) %>%
+    select(Attention, Subject, Condition, BiasScore)
+
+
+
+block_aov = anova_test(data=long_block_data, dv=BiasScore, wid=Subject, between=Attention, within = Condition)
+print(block_aov)
+```
+```{r anova graph blocks}
+df_unique<-data
+data_long <- df_unique %>%
+  select(Subject, block1_bias, block2_bias, block3_bias, block4_bias) %>%
+  pivot_longer(cols = starts_with("block"), names_to = "Block", values_to = "BiasScore") %>%
+  mutate(absBiasScore = abs(BiasScore))
+
+# Calculate mean and standard error for each block
+se_sum <- data_long %>%
+  group_by(Block) %>%
+  summarise(
+    mean = mean(absBiasScore, na.rm = TRUE),
+    sd = sd(absBiasScore, na.rm = TRUE),
+    n = n()
+  ) %>%
+  mutate(se = sd/sqrt(n))
+
+# Plotting
+ggplot(se_sum, aes(x = Block, y = mean, fill = Block)) +
+  geom_bar(position = position_dodge(0.8), stat = "identity", color = "black", size = 0.5, width = 0.8, alpha = 0.8) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se), position = position_dodge(0.8), width = 0.25, color = "black") +
+  labs(title = "Mean Absolute Bias Scores by Block",
+       x = "Block",
+       y = "Mean Absolute Bias Score") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+data_long <- df_unique %>%
+  select(Subject, Attention, block1_bias, block2_bias, block3_bias, block4_bias) %>%
+  pivot_longer(cols = starts_with("block"), names_to = "Block", values_to = "BiasScore") %>%
+  mutate(absBiasScore = abs(BiasScore))
+
+# Calculate mean and standard error for each block and attention group
+se_sum <- data_long %>%
+  group_by(Attention, Block) %>%
+  summarise(
+    mean = mean(absBiasScore, na.rm = TRUE),
+    sd = sd(absBiasScore, na.rm = TRUE),
+    n = n()
+  ) %>%
+  mutate(se = sd/sqrt(n))
+
+# Plotting
+ggplot(se_sum, aes(x = Block, y = mean, fill = Attention)) +
+  geom_bar(position = position_dodge(0.8), stat = "identity", color = "black", size = 0.5, width = 0.8, alpha = 0.8) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se), position = position_dodge(0.8), width = 0.25, color = "black") +
+  scale_fill_manual(values = c("neutral" = "blue", "biased" = "red")) +
+  labs(title = "Mean Absolute Bias Scores by Block and Attention",
+       x = "Block",
+       y = "Mean Absolute Bias Score") +
+  theme_minimal()
+```
+
+```{r rt plot blocks}
+long_df <- data %>%
+  gather(key = "Block", value = "RT", block1_mean:block4_mean)
+
+# Convert block names to a factor to ensure proper ordering
+long_df$Block <- factor(long_df$Block, levels = c("block1_mean", "block2_mean", "block3_mean", "block4_mean"))
+
+biased <- subset(long_df, long_df$BiasScore > 0.8 | long_df$BiasScore < -0.8)
+neutral <- subset(long_df, long_df$BiasScore <= 0.8 & long_df$BiasScore >= -0.8)
+
+
+# Plot using ggplot2 with a subset of subjects
+ggplot(biased, aes(x = Block, y = RT, group = Subject, color = Subject)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Reaction Times Across Blocks (biased)",
+    x = "Block",
+    y = "Milliseconds"
+  ) +
+  theme_minimal()+
+  theme(legend.position = "none")
+
+ggplot(neutral, aes(x = Block, y = RT, group = Subject, color = Subject)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Reaction Times Across Blocks (neutral)",
+    x = "Block",
+    y = "Milliseconds"
+  ) +
+  theme_minimal()+
+  theme(legend.position = "none")
+
+long_df2 <- data %>%
+  gather(key = "Block", value = "BiasScore", block1_bias:block4_bias)
+
+#Bias Score across blocks
+
+df_unique <- data[, !duplicated(as.list(data))]
+
+data_neutral <- df_unique %>%
+  filter(Attention == 'neutral')
+
+# Reshape the data for ggplot2
+data_neutral_long <- data_neutral %>%
+  select(Subject, block1_bias, block2_bias, block3_bias, block4_bias) %>%
+  pivot_longer(cols = starts_with("block"), names_to = "Block", values_to = "BiasScore")
+
+# Plotting
+ggplot(data_neutral_long, aes(x = Block, y = BiasScore, group = Subject, color = Subject)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Bias Scores Across Blocks for Participants (Neutral Attention)",
+       x = "Block",
+       y = "Bias Score") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+#biased
+data_biased <- df_unique %>%
+  filter(Attention == 'biased')
+
+# Reshape the data for ggplot2
+data_biased_long <- data_biased %>%
+  select(Subject, block1_bias, block2_bias, block3_bias, block4_bias) %>%
+  pivot_longer(cols = starts_with("block"), names_to = "Block", values_to = "BiasScore")
+
+# Plotting
+ggplot(data_biased_long, aes(x = Block, y = BiasScore, group = Subject, color = Subject)) +
+  geom_line(position=position_jitter(w=0.05,h=0.05)) +
+  geom_point() +
+  labs(title = "Bias Scores Across Blocks for Participants (Biased Attention)",
+       x = "Block",
+       y = "Bias Score") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+```{r}
+data_neutral_selected <- data_neutral_long %>%
+  filter(Subject %in% c("e8b26ab1", "89601069", "08f746fa", "6409a8b2"))  # Replace 1, 2, 3 with the subjects you want to plot
+
+# Plot the selected participants
+ggplot(data_neutral_selected, aes(x = Block, y = BiasScore, group = Subject, color = Subject)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Neutral Participant Strategies",
+    x = "Block",
+    y = "Bias Score"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+```{r}
+print(data_neutral_long)
+```
+
+```{r}
+demographics_data <-read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/Copy of CardSortingTask_Analysis_09.28.2023.csv")
+names(demographics_data)[names(demographics_data) == "SubjectNumber"] <- "Subject"
+merged_df <- merge(demographics_data, df_unique, by = "Subject")
+cols_toremove <- c("SymRespCount.x", "TxtRespCount.x", "IncorrRespCount")
+merged_df <- merged_df %>% select(-one_of(cols_toremove))
+
+merged_df$Block <- as.factor(sub("CardSort_Block", "", merged_df$Block))
+
+# Split the data into congruent and incongruent trials based on some condition criteria
+# Note: You need to adjust 'Condition' based on what defines congruent (1) and incongruent (2) trials in your dataset
+congruent_data <- merged_df %>% 
+  filter(Condition == 1) %>%
+  group_by(Subject, Block) %>%
+  summarise(Mean_RT = mean(RT, na.rm = TRUE))
+
+incongruent_data <- merged_df %>%
+  filter(Condition == 2) %>%
+  group_by(Subject, Block) %>%
+  summarise(Mean_RT = mean(RT, na.rm = TRUE))
+
+# Create a plot for Congruent Trials
+p1 <- ggplot(congruent_data, aes(x = Block, y = Mean_RT, group = Subject, color = Subject)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean RT for Congruent Trials", x = "Block", y = "Mean RT (ms)") +
+  theme_minimal()+
+  theme(legend.position = "none") 
+
+# Create a plot for Incongruent Trials
+p2 <- ggplot(incongruent_data, aes(x = Block, y = Mean_RT, group = Subject, color = Subject)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean RT for Incongruent Trials", x = "Block", y = "Mean RT (ms)") +
+  theme_minimal()+
+  theme(legend.position = "none") 
+
+# Print the plots
+print(p1)
+print(p2)
+
+overall_congruent <- merged_df %>%
+  filter(Condition == 1) %>%
+  group_by(Block) %>%
+  summarise(Mean_RT = mean(RT, na.rm = TRUE))
+
+overall_incongruent <- merged_df %>%
+  filter(Condition == 2) %>%
+  group_by(Block) %>%
+  summarise(Mean_RT = mean(RT, na.rm = TRUE))
+
+# Plotting overall mean RT for Congruent Trials
+p1 <- ggplot(overall_congruent, aes(x = Block, y = Mean_RT)) +
+  geom_line(color = "blue") +
+  geom_point(color = "blue") +
+  labs(title = "Overall Mean RT for Congruent Trials", x = "Block", y = "Mean RT (ms)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Plotting overall mean RT for Incongruent Trials
+p2 <- ggplot(overall_incongruent, aes(x = Block, y = Mean_RT)) +
+  geom_line(color = "red") +
+  geom_point(color = "red") +
+  labs(title = "Overall Mean RT for Incongruent Trials", x = "Block", y = "Mean RT (ms)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Print the plots
+print(p1)
+print(p2)
+
+merged_df$Block <- as.factor(sub("CardSort_Block", "", merged_df$Block))
+
+# Calculate overall mean RT for Congruent and Incongruent Trials for each block and create a new column 'Type'
+congruent_data <- merged_df %>%
+  filter(Condition == 1) %>%
+  group_by(Block) %>%
+  summarise(Mean_RT = mean(RT, na.rm = TRUE)) %>%
+  mutate(Type = "Congruent")
+
+incongruent_data <- merged_df %>%
+  filter(Condition == 2) %>%
+  group_by(Block) %>%
+  summarise(Mean_RT = mean(RT, na.rm = TRUE)) %>%
+  mutate(Type = "Incongruent")
+
+# Combine the datasets
+combined_data <- rbind(congruent_data, incongruent_data)
+
+# Plotting overall mean RT for both Congruent and Incongruent Trials
+combined_plot <- ggplot(combined_data, aes(x = Block, y = Mean_RT, color = Type, group = Type)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Overall Mean RT for Congruent and Incongruent Trials", x = "Block", y = "Mean RT (ms)") +
+  scale_color_manual(values = c("orange", "green")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())  # Optionally remove legend title
+
+# Print the combined plot
+print(combined_plot)
+
+biased$Group <- "Biased"
+neutral$Group <- "Neutral"
+
+# Combine the two datasets into one
+combined_data <- rbind(biased, neutral)
+
+# Function to calculate standard error of the mean (SEM)
+sem <- function(x) {
+  return(sd(x, na.rm = TRUE) / sqrt(length(x)))
+}
+
+# Aggregate the data to calculate mean RT and SEM for each Block within each Group
+mean_rt_scores <- combined_data %>%
+  group_by(Block, Group) %>%
+  summarise(
+    Mean_RT = mean(RT, na.rm = TRUE),
+    SEM = sem(RT)
+  )
+
+# Plotting overall mean response time with error bars for Neutral and Biased Groups
+combined_plot <- ggplot(mean_rt_scores, aes(x = Block, y = Mean_RT, color = Group, group = Group)) +
+  geom_line() +
+  geom_point() +
+  geom_errorbar(aes(ymin = Mean_RT - SEM, ymax = Mean_RT + SEM), width = 0.2) +
+  labs(title = "Overall Mean Response Times for Neutral and Biased Groups", x = "Block", y = "Mean Response Time (ms)") +
+  scale_color_manual(values = c("red", "blue")) +
+  theme_minimal() +
+  theme(legend.title = element_blank())  # Optionally remove legend title
+
+# Print the combined plot
+print(combined_plot)
+
+
+
+```
+```{r demographics}
+parc_cardsort <- read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/CardSort_Summary(in).csv")
+parc_demographics <- read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/Demographics_Summary(in).csv")
+
+parc_merged <- merge(parc_demographics, parc_cardsort, by = "Subject")
+maia_data <- read.csv("CardSort Data.csv")
+lang_data <- read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/CardSortLanguage.csv")
+lang_data = lang_data[, c("SubjectNumber", "NativeEnglish", "SecondLang", "WhatSecLang")]
+lang_data$L1 = NA
+
+for (subject in lang_data$SubjectNumber){
+  lang_data$L1[lang_data$NativeEnglish == 1] <- "English"
+  lang_data$L1[lang_data$NativeEnglish == 2] <- lang_data$WhatSecLang[lang_data$NativeEnglish == 2]
+}
+
+# Drop columns using base R
+lang_data <- lang_data[, setdiff(names(lang_data), c("NativeEnglish", "SecondLang", "WhatSecLang"))]
+
+maia_merged = merge(lang_data, maia_data, by= "SubjectNumber")
+
+parc_merged = parc_merged[, c("Subject", "L1", "SymRespCount", "TxtRespCount","IncorrRespCount")]
+maia_merged = maia_merged[, c("SubjectNumber", "L1", "SymRespCount", "TxtRespCount", "IncorrRespCount")]
+names(maia_merged)[names(maia_merged) == "SubjectNumber"] <- "Subject"
+
+merged <- rbind(maia_merged, parc_merged)
+
+englishL1 <- merged[merged$L1 == "English", ]
+unique_subjects_eng <- unique(englishL1$Subject)
+num_sub_eng <- length(unique_subjects_eng)
+
+not_englishL1 <- merged[merged$L1 != "English", ]
+unique_subjects_not_eng <- unique(not_englishL1$Subject)
+num_eng_not_L1 <- length(unique_subjects_not_eng)
+```
