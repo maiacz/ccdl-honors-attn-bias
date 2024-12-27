@@ -86,33 +86,35 @@ data %>%
 
 # Distributions of Bias Scores
 ```{r bias_histo}
-
 biasMean <- mean(data$BiasScore, na.rm = T)
 biasMedian <- median(data$BiasScore, na.rm = T)
 
 bias1sd <- biasMean + sd(data$BiasScore)
 biasneg1sd <- biasMean - sd(data$BiasScore)
 
-
 data %>%
   ggplot(aes(x=BiasScore)) +
   geom_histogram(fill = "grey", color = "black", bins=30) +
-  geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", linewidth = 1) +
-  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", linewidth = 1) +
-   geom_vline(mapping = aes(xintercept = bias1sd), color = "black", linetype = "dashed", linewidth = 1) +
-   geom_vline(mapping = aes(xintercept = biasneg1sd), color = "black", linetype = "dashed", linewidth = 1) +
+  geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed",
+             linewidth = 1) +
+  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed",
+             linewidth = 1) +
+   geom_vline(mapping = aes(xintercept = bias1sd), color = "black", linetype = "dashed",
+              linewidth = 1) +
+   geom_vline(mapping = aes(xintercept = biasneg1sd), color = "black", linetype = "dashed",
+              linewidth = 1) +
   ggtitle("Distribution of Bias Scores")
 
 data %>%
   ggplot(aes(x=BiasScore)) +
   geom_density(fill = "grey", color = "black") +
-   geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", size = 1) +
-  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", size = 1) +
+   geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed",
+              linewidth = 1) +
+  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed",
+             linewidth = 1) +
   ggtitle("Distribution of Bias Scores")
-
-
 ```
-#A lot less neutral people than biased people
+Observation: There are a lot less people in the neutral group (center) than there are in the biased group (right and left extremes).
 
 # Distributions of Incongruency Effect - Whole Group & Bias Split
 ```{r inconeffect_dist}
