@@ -1,5 +1,5 @@
 ---
-title: "Maia Analysis"
+title: "Project Analysis"
 author: "Maia Czerwonka"
 date: "2024-02-27"
 output:
@@ -8,6 +8,8 @@ output:
     number_sections: true
   word_document: default
 ---
+
+Data analysis and visualizations for Maia Czerwonka's University of Washington Psychology Department Cognition and Cortical Dynamics Laboratory research project exploring the individual differences between people's information processing and attentional bias when presented with conflicting information in the card sorting task.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -69,11 +71,10 @@ collapse_rows_df <- function(df, variable){
 }
 ```
 
-
+# Data Initialization
 ```{r load_data}
-# Load in .csv
 data <- read.csv("MaiaData_CardSort.csv")
-data
+head(data)
 ```
 
 # Descriptives of Dataset
@@ -95,11 +96,11 @@ biasneg1sd <- biasMean - sd(data$BiasScore)
 
 data %>%
   ggplot(aes(x=BiasScore)) +
-  geom_histogram(fill = "grey", color = "black") +
-  geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", size = 1) +
-  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", size = 1) +
-   geom_vline(mapping = aes(xintercept = bias1sd), color = "black", linetype = "dashed", size = 1) +
-   geom_vline(mapping = aes(xintercept = biasneg1sd), color = "black", linetype = "dashed", size = 1) +
+  geom_histogram(fill = "grey", color = "black", bins=30) +
+  geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", linewidth = 1) +
+  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", linewidth = 1) +
+   geom_vline(mapping = aes(xintercept = bias1sd), color = "black", linetype = "dashed", linewidth = 1) +
+   geom_vline(mapping = aes(xintercept = biasneg1sd), color = "black", linetype = "dashed", linewidth = 1) +
   ggtitle("Distribution of Bias Scores")
 
 data %>%
