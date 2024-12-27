@@ -3,14 +3,10 @@ title: "Maia Analysis"
 author: "Maia Czerwonka"
 date: "2024-02-27"
 output:
+  pdf_document: default
   html_document:
-    code_folding: hide
-    toc: true
-    toc_float: true
     number_sections: true
-    theme: cosmo
-  pdf_document:
-    toc: true
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -81,13 +77,10 @@ data
 ```
 
 # Descriptives of Dataset
-
-```{r cars}
-
+```{r descriptives}
 data %>%
   select(-c(Subject, Sex)) %>%
   psych::describe()
-
 ```   
 
 # Distributions of Bias Scores
@@ -831,8 +824,7 @@ neutral <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
 
 #biased word cleaning
 cleaned_biased_word <- biased_word %>%
-  select(-c(block1_mean.1, block2_mean.1, block3_mean.1, block4_mean.1, 
-            block1_bias.1, block2_bias.1, block3_bias.1, block4_bias.1, Subject.1))
+  select(-c(Subject.1))
 
 descriptives_biased_word <- cleaned_biased_word %>%
   select(-c(Subject, Sex, InconOutlier,Attention)) %>%
@@ -844,8 +836,7 @@ bw_descdf <- as.data.frame(descriptives_biased_word)
 #biased picture cleaning
 
 cleaned_biased_pic <- biased_picture %>%
-  select(-c(block1_mean.1, block2_mean.1, block3_mean.1, block4_mean.1, 
-            block1_bias.1, block2_bias.1, block3_bias.1, block4_bias.1, Subject.1))
+  select(-c(Subject.1))
 
 descriptives_biased_pic <- cleaned_biased_pic %>%
   select(-c(Subject, Sex, InconOutlier,Attention)) %>%
@@ -885,6 +876,7 @@ neutral_means_df$se[neutral_means_df$Block == "Block 4"] <- n_descdf$se[5]  # Bi
 
 
 # Adding error bars to the plot
+se<- n_descdf$se[5]
 combined_plot <- ggplot() +
   geom_line(data = neutral_means_df, aes(x = Block, y = MeanBias, group = Group, color = "Neutral")) +
   geom_point(data = neutral_means_df, aes(x = Block, y = MeanBias, color = "Neutral")) +
@@ -904,10 +896,6 @@ combined_plot <- ggplot() +
 
 # Display the combined plot
 print(combined_plot)
-
-# Now you can proceed with adding error bars or plotting
-
-
 ```
 ```{r diff btwn blocks t-test}
 # Calculating changes between blocks for both groups
@@ -957,8 +945,8 @@ data <- data %>%
     select(Attention, Subject, Condition, BiasScore)
 
 
-block_aov = anova_test(data=long_block_data, dv=BiasScore, wid=Subject, between=Attention, within = Condition)
-print(block_aov)
+#block_aov = anova_test(data=long_block_data, dv=BiasScore, wid=Subject, between=Attention, within = Condition)
+#print(block_aov)
 
 data <- data[, !duplicated(colnames(data))]
 data <- data %>%
@@ -972,8 +960,8 @@ data <- data %>%
 
 
 
-block_aov = anova_test(data=long_block_data, dv=BiasScore, wid=Subject, between=Attention, within = Condition)
-print(block_aov)
+#block_aov = anova_test(data=long_block_data, dv=BiasScore, wid=Subject, between=Attention, within = Condition)
+#print(block_aov)
 ```
 ```{r anova graph blocks}
 df_unique<-data
@@ -1130,7 +1118,7 @@ print(data_neutral_long)
 ```
 
 ```{r}
-demographics_data <-read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/Copy of CardSortingTask_Analysis_09.28.2023.csv")
+demographics_data <-read.csv("Copy of CardSortingTask_Analysis_09.28.2023.csv")
 names(demographics_data)[names(demographics_data) == "SubjectNumber"] <- "Subject"
 merged_df <- merge(demographics_data, df_unique, by = "Subject")
 cols_toremove <- c("SymRespCount.x", "TxtRespCount.x", "IncorrRespCount")
@@ -1266,12 +1254,12 @@ print(combined_plot)
 
 ```
 ```{r demographics}
-parc_cardsort <- read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/CardSort_Summary(in).csv")
-parc_demographics <- read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/Demographics_Summary(in).csv")
+parc_cardsort <- read.csv("CardSort_Summary(in).csv")
+parc_demographics <- read.csv("Demographics_Summary(in).csv")
 
 parc_merged <- merge(parc_demographics, parc_cardsort, by = "Subject")
 maia_data <- read.csv("CardSort Data.csv")
-lang_data <- read.csv("~/Library/CloudStorage/OneDrive-UW/CCDL/MGH Research Project/CardSortLanguage.csv")
+lang_data <- read.csv("CardSortLanguage.csv")
 lang_data = lang_data[, c("SubjectNumber", "NativeEnglish", "SecondLang", "WhatSecLang")]
 lang_data$L1 = NA
 

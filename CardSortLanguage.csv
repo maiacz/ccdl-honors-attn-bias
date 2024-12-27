@@ -1,0 +1,186 @@
+﻿ExptName,SubjectNumber,Date,Country,Age,Sex,Gender,Ethnicity,Race,Education,NativeEnglish,SecondLang,WhatSecLang,LangClassification,Handedness
+WebTask_CardSort_v2,e0216ded,2023-02-04-0308,"US, United States",54,2,2,2,5,11,1,2,,1,6.67
+WebTask_CardSort_v2,0bf6b839,2023-02-04-0313,"US, United States",54,2,2,2,5,11,1,2,,1,6.67
+WebTask_CardSort_v2,bd06a398,2023-02-06-1317,"US, United States",44,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,703265e2,2023-02-06-1710,"FI, Finland",43,1,1,2,8,10,2,1,Finnish,3,73.33
+WebTask_CardSort_v2,9c2294e3,2023-02-06-2050,"US, United States",50,1,1,2,6,10,1,2,,1,47.37
+WebTask_CardSort_v2,9267045e,2023-02-07-1642,"US, United States",36,2,2,2,5,12,1,2,,1,87.5
+WebTask_CardSort_v2,b34c5e2c,2023-02-08-1608,"US, United States",64,1,1,2,5,12,1,2,,1,100
+WebTask_CardSort_v2,1c4f7ffb,2023-02-08-1750,"US, United States",44,1,1,2,5,10,1,2,,3,62.5
+WebTask_CardSort_v2,d0d04e2f,2023-02-10-0202,"US, United States",30,2,2,2,5,12,1,2,,1,88.89
+WebTask_CardSort_v2,c3224966,2023-02-10-0627,"AU, Australia",45,2,2,2,5,10,1,2,,1,77.78
+WebTask_CardSort_v2,b5a17561,2023-02-10-1440,"US, United States",56,2,2,2,5,12,1,2,,1,90
+WebTask_CardSort_v2,24d99a95,2023-02-11-0143,"CA, Canada",39,2,2,2,5,12,1,2,,2,89.47
+WebTask_CardSort_v2,ed2aa13b,2023-02-12-0201,"US, United States",26,1,1,2,5,10,1,2,,1,88.89
+WebTask_CardSort_v2,9449a552,2023-02-12-2050,"US, United States",57,2,2,2,5,10,1,2,,1,90
+WebTask_CardSort_v2,2485948d,2023-02-13-1744,"US, United States",51,2,2,2,5,13,1,2,,1,77.78
+WebTask_CardSort_v2,2887f859,2023-02-15-1442,"US, United States",36,2,2,2,5,14,1,2,,3,89.47
+WebTask_CardSort_v2,599a551a,2023-02-15-2224,"US, United States",32,2,2,2,2,16,2,1,Hindi,2,100
+WebTask_CardSort_v2,f27c8cbe,2023-02-15-2234,"US, United States",58,1,1,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,0ebb6dab,2023-02-16-0044,"US, United States",80,2,2,2,5,11,1,2,,1,88.24
+WebTask_CardSort_v2,65c75fc2,2023-02-17-0117,"US, United States",34,2,2,2,5,12,1,2,,1,100
+WebTask_CardSort_v2,bb626e6d,2023-02-17-1743,"US, United States",28,2,2,2,5,12,1,2,,1,22.22
+WebTask_CardSort_v2,b6859fc4,2023-02-18-2143,"US, United States",23,2,2,2,5,9,1,2,,1,75
+WebTask_CardSort_v2,3b79c957,2023-02-19-0117,"US, United States",37,2,2,2,5,14,1,2,,3,100
+WebTask_CardSort_v2,dfe0dfb3,2023-02-19-0111,"US, United States",40,1,1,2,5,16,1,2,,1,37.5
+WebTask_CardSort_v2,f33cd5ba,2023-02-19-2332,"US, United States",65,2,2,2,5,11,1,2,,1,88.24
+WebTask_CardSort_v2,ccabde00,2023-02-20-1725,"US, United States",38,2,2,2,5,12,1,2,,1,78.95
+WebTask_CardSort_v2,5816ece9,2023-02-20-2257,"CA, Canada",19,2,2,2,5,8,1,2,,1,-33.33
+WebTask_CardSort_v2,cb8d96e2,2023-02-21-0235,"US, United States",63,2,2,2,5,10,1,2,,1,85.71
+WebTask_CardSort_v2,fb705df2,2023-02-21-0404,"US, United States",18,2,2,2,5,7,1,2,,1,100
+WebTask_CardSort_v2,ffdf4f28,2023-02-21-0534,"US, United States",30,2,2,2,8,12,2,1,,1,100
+WebTask_CardSort_v2,3b118efc,2023-02-21-1745,"US, United States",42,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,f9af1669,2023-02-21-2021,"US, United States",42,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,68a9d481,2023-02-22-1834,"US, United States",44,2,2,2,3,7,1,2,,1,90
+WebTask_CardSort_v2,901e335b,2023-02-22-1851,"US, United States",44,2,2,2,3,6,1,2,,1,90
+WebTask_CardSort_v2,82a2bd0c,2023-02-24-0058,"US, United States",42,2,2,2,5,12,1,2,,1,88.89
+WebTask_CardSort_v2,8f5c3e5c,2023-02-24-0148,"CA, Canada",55,2,2,2,5,4,1,2,,1,-5.88
+WebTask_CardSort_v2,2078bec9,2023-02-24-0339,"US, United States",10,2,2,2,5,1,1,2,,1,100
+WebTask_CardSort_v2,2958c25f,2023-02-24-1343,"US, United States",36,2,2,2,5,12,1,2,,1,80
+WebTask_CardSort_v2,bd5495a7,2023-02-24-1827,"US, United States",36,2,2,2,5,10,1,2,,1,76.47
+WebTask_CardSort_v2,3e459806,2023-02-24-2054,"US, United States",40,2,2,2,5,12,1,2,,1,100
+WebTask_CardSort_v2,59348bca,2023-02-25-0658,"US, United States",47,2,2,2,5,8,1,2,,1,52.94
+WebTask_CardSort_v2,bc551487,2023-02-25-2247,"US, United States",28,1,1,2,5,11,1,2,,4,-46.67
+WebTask_CardSort_v2,ecca85f8,2023-02-27-0329,"US, United States",38,1,1,1,6,14,1,1,Spanish,1,73.33
+WebTask_CardSort_v2,fdd4712a,2023-02-28-2352,"US, United States",41,2,2,2,5,11,1,2,,1,50
+WebTask_CardSort_v2,30d40fe2,2023-03-01-0036,"US, United States",26,1,1,2,5,15,1,2,,3,52.94
+WebTask_CardSort_v2,62c71be3,2023-03-01-0040,"US, United States",25,2,2,1,7,9,2,1,Spanish,2,76.47
+WebTask_CardSort_v2,d792be63,2023-03-01-1926,"US, United States",65,2,2,2,6,10,1,2,,1,-88.24
+WebTask_CardSort_v2,d85d3220,2023-03-01-2016,"NL, Netherlands",25,2,2,2,5,11,2,1,Dutch,3,-90
+WebTask_CardSort_v2,513c6adf,2023-03-02-2223,"US, United States",27,1,1,1,5,8,1,1,Spanish,3,64.71
+WebTask_CardSort_v2,5701e616,2023-03-03-2301,"US, United States",64,2,2,2,5,10,1,2,,1,77.78
+WebTask_CardSort_v2,5843f329,2023-03-05-0119,"US, United States",54,1,1,2,5,10,1,2,,1,90
+WebTask_CardSort_v2,5fc4fa1b,2023-03-09-1711,IP Address not found,12,2,2,2,6,1,1,1,norwegian,2,90
+WebTask_CardSort_v2,d41bb601,2023-03-09-1723,IP Address not found,43,2,2,2,2,14,1,1,hindi,2,78.95
+WebTask_CardSort_v2,f1fb3ed7,2023-03-10-0000,"US, United States",48,1,1,2,5,11,1,2,,3,42.86
+WebTask_CardSort_v2,14165170,2023-03-12-0009,"US, United States",83,3,2,2,5,8,1,1,"Spanish. some Russian,  all exposure was during my childhood",3,26.32
+WebTask_CardSort_v2,2c32d3f4,2023-03-14-0521,"US, United States",62,1,1,2,5,10,1,2,,1,88.24
+WebTask_CardSort_v2,8afceed7,2023-03-15-0212,"US, United States",47,2,2,2,5,12,1,2,,3,80
+WebTask_CardSort_v2,0b482cbe,2023-03-15-2107,"US, United States",36,2,2,2,5,10,1,2,,1,88.89
+WebTask_CardSort_v2,a8f7199a,2023-03-16-0427,"US, United States",34,2,2,2,5,10,1,2,,1,44.44
+WebTask_CardSort_v2,bad0b9f0,2023-03-16-0524,"US, United States",34,2,2,2,5,10,1,2,,1,41.18
+WebTask_CardSort_v2,32813fd0,2023-03-16-0901,"SE, Sweden",60,1,1,1,6,15,1,1,"Swedish, Spanish.",3,75
+WebTask_CardSort_v2,2a91a3cc,2023-03-16-0911,"SE, Sweden",60,1,1,1,6,15,1,1,"Swediush, Spanish",2,85.71
+WebTask_CardSort_v2,ba441428,2023-03-16-1850,"US, United States",34,2,2,2,5,10,1,2,,1,68.42
+WebTask_CardSort_v2,f0d24353,2023-03-16-2104,"US, United States",47,1,1,2,5,12,1,2,,1,88.89
+WebTask_CardSort_v2,d208937c,2023-03-17-0131,"US, United States",74,2,2,2,5,16,1,2,,1,-100
+WebTask_CardSort_v2,107f8d3e,2023-03-17-0150,"US, United States",29,2,2,2,5,12,1,2,,1,84.62
+WebTask_CardSort_v2,fade4881,2023-03-17-0212,"US, United States",59,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,e80f9781,2023-03-17-1627,"US, United States",44,2,4,2,6,10,1,2,,1,42.86
+WebTask_CardSort_v2,b68374cc,2023-03-18-2251,"US, United States",22,2,2,2,5,10,1,1,Chinese,1,76.47
+WebTask_CardSort_v2,3e83a772,2023-03-20-0112,"FR, France",30,2,2,2,5,6,1,2,,1,78.95
+WebTask_CardSort_v2,b54d7127,2023-03-21-1615,"US, United States",54,2,2,2,7,16,1,1,"Gujerati,Hindi, Marathi",2,100
+WebTask_CardSort_v2,4845278d,2023-03-23-1524,"US, United States",41,1,1,2,5,10,1,1,Spanish,3,100
+WebTask_CardSort_v2,da94862b,2023-03-24-0923,"ZA, South Africa",41,2,2,2,3,11,2,1,Shona,2,-60
+WebTask_CardSort_v2,335d619c,2023-03-26-0047,"US, United States",25,2,2,2,5,6,2,2,,1,66.67
+WebTask_CardSort_v2,dc8267e2,2023-03-26-0425,"NZ, New Zealand",56,2,2,2,2,11,1,1,chinese,1,-23.08
+WebTask_CardSort_v2,0ccd33c5,2023-03-26-1636,"CA, Canada",54,2,2,2,5,11,1,2,,2,90
+WebTask_CardSort_v2,e1264a4f,2023-03-26-2238,"US, United States",26,2,2,1,6,12,1,1,Spanish,2,87.5
+WebTask_CardSort_v2,69863308,2023-03-28-1619,"CA, Canada",40,2,2,2,5,11,1,2,,1,88.89
+WebTask_CardSort_v2,4ea7e33e,2023-03-29-0425,"US, United States",45,2,2,2,2,12,2,1,Korean,4,100
+WebTask_CardSort_v2,f6292664,2023-03-29-1744,"US, United States",31,2,1,2,5,10,1,2,,1,-20
+WebTask_CardSort_v2,e90ecf36,2023-03-30-1340,"US, United States",52,2,2,2,5,10,1,2,,1,60
+WebTask_CardSort_v2,73f3b4e7,2023-03-30-2335,"US, United States",39,2,2,2,5,12,1,1,Spanish,3,64.71
+WebTask_CardSort_v2,59d4e173,2023-04-01-1758,"CA, Canada",53,2,2,2,5,11,1,2,,1,89.47
+WebTask_CardSort_v2,90caab28,2023-04-04-1622,"DE, Germany",32,1,1,2,5,16,2,1,"German native, basic French, a little Italian",1,-89.47
+WebTask_CardSort_v2,ec41c586,2023-04-05-0043,"AU, Australia",21,2,2,2,5,11,1,1,Bosnian,1,52.94
+WebTask_CardSort_v2,5c8d0b14,2023-04-05-1927,"US, United States",45,2,2,2,5,10,1,1,Exposed to Spanish (not fluent!),1,80
+WebTask_CardSort_v2,53afc254,2023-04-06-0635,"US, United States",20,1,1,2,2,9,2,1,Chinese,3,76.47
+WebTask_CardSort_v2,a316c167,2023-04-07-1636,"US, United States",41,1,1,1,6,16,2,1,Spanish,2,89.47
+WebTask_CardSort_v2,d7f2ce5b,2023-04-13-1437,"US, United States",13,2,2,2,2,2,1,1,French,1,42.86
+WebTask_CardSort_v2,ea0fcf6f,2023-04-13-1817,"CA, Canada",51,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,16f9e2af,2023-04-13-1823,"CA, Canada",51,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,eca1bcfe,2023-04-14-2023,"US, United States",44,2,2,2,5,14,2,1,Polish,3,88.89
+WebTask_CardSort_v2,3661b157,2023-04-17-1606,"CA, Canada",40,1,1,2,2,12,1,1,,4,-11.11
+WebTask_CardSort_v2,feabc45c,2023-04-19-1952,"US, United States",33,2,2,2,5,15,1,2,,1,-75
+WebTask_CardSort_v2,e7ff23cc,2023-04-19-2352,"US, United States",39,2,2,3,8,10,1,2,,1,47.37
+WebTask_CardSort_v2,c97ba508,2023-04-23-1944,"GB, United Kingdom",35,1,1,2,5,12,2,1,Portuguese,3,80
+WebTask_CardSort_v2,42bd8614,2023-04-23-2229,"GB, United Kingdom",50,1,1,2,5,7,1,2,,1,77.78
+WebTask_CardSort_v2,431d20df,2023-04-24-1539,"US, United States",45,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,054ba968,2023-04-24-1823,"US, United States",87,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,e8b26ab1,2023-04-24-2032,"CA, Canada",47,1,1,2,5,12,1,2,,1,60
+WebTask_CardSort_v2,9d172f36,2023-04-28-1607,"DE, Germany",37,2,2,1,7,12,2,1,"Spanish, German",2,52.94
+WebTask_CardSort_v2,e15dad59,2023-04-28-1627,"US, United States",46,1,1,2,5,12,1,1,"german, russian, spanish",2,25
+WebTask_CardSort_v2,be60cc2c,2023-04-28-2148,"US, United States",30,2,2,2,5,8,1,2,,1,25
+WebTask_CardSort_v2,2ee97ea7,2023-04-29-0509,"AU, Australia",29,1,1,2,5,11,1,2,,1,69.23
+WebTask_CardSort_v2,188a146f,2023-04-30-0212,"US, United States",34,2,2,2,5,12,1,2,,3,86.67
+WebTask_CardSort_v2,a20c2c7f,2023-05-01-0407,"US, United States",50,1,1,2,2,12,2,1,Vietnamese,3,45.45
+WebTask_CardSort_v2,93eb1c7c,2023-05-01-0414,"US, United States",51,1,1,2,2,12,2,1,Vietnamese,3,50
+WebTask_CardSort_v2,cd55f156,2023-05-03-1740,"CA, Canada",30,1,1,2,5,10,1,2,,1,73.33
+WebTask_CardSort_v2,dcee3b58,2023-05-03-2257,"US, United States",48,2,2,3,2,11,1,1,"Tagalog, Spanish, French",3,71.43
+WebTask_CardSort_v2,05546b7f,2023-05-09-0104,"US, United States",60,2,2,2,5,12,1,1,French,1,86.67
+WebTask_CardSort_v2,89601069,2023-05-09-2029,"US, United States",22,2,2,2,5,4,2,1,ESTONIAN,4,77.78
+WebTask_CardSort_v2,0b2a2504,2023-05-18-1905,"US, United States",34,2,2,2,5,12,1,2,,3,62.5
+WebTask_CardSort_v2,a9d90d7b,2023-05-18-1959,"MU, Mauritius",31,1,1,2,3,12,1,1,Swahili,2,100
+WebTask_CardSort_v2,b1466d2f,2023-05-20-2242,"US, United States",78,2,2,2,5,16,1,2,,1,88.89
+WebTask_CardSort_v2,a76f91d1,2023-05-21-0501,"US, United States",33,2,3,2,6,12,1,1,,1,68.42
+WebTask_CardSort_v2,4db4c716,2023-05-23-0914,"AU, Australia",30,2,2,2,5,10,1,1,Auslan (Australian Sign Language),2,100
+WebTask_CardSort_v2,96341682,2023-05-24-0210,"CA, Canada",31,1,1,2,5,6,1,2,,1,50
+WebTask_CardSort_v2,80884a14,2023-05-24-1635,"US, United States",33,2,2,2,5,12,1,2,,1,100
+WebTask_CardSort_v2,ad20acda,2023-05-28-0018,"US, United States",43,1,1,2,2,8,1,1,,1,70
+WebTask_CardSort_v2,e928f889,2023-05-28-1320,"US, United States",35,1,1,2,7,10,2,1,Arabic,3,89.47
+WebTask_CardSort_v2,ec01fb3e,2023-05-28-1348,"US, United States",35,1,1,2,7,10,2,1,Arabic,3,76.47
+WebTask_CardSort_v2,9cae589f,2023-05-29-0429,"US, United States",37,1,1,2,5,10,1,2,,1,88.89
+WebTask_CardSort_v2,9e16af1d,2023-05-30-1430,"US, United States",50,2,2,1,5,12,2,1,Spanish,2,85.71
+WebTask_CardSort_v2,549e2bf3,2023-05-31-1519,"US, United States",23,2,2,2,5,10,1,2,,1,57.14
+WebTask_CardSort_v2,66eb7b6a,2023-06-01-0532,"US, United States",20,2,2,2,6,8,1,1,Chinese (Mandarin),2,86.67
+WebTask_CardSort_v2,df52db19,2023-06-01-0533,"US, United States",21,2,2,2,5,9,1,2,,3,75
+WebTask_CardSort_v2,6409a8b2,2023-06-01-0537,"US, United States",22,2,2,2,2,10,2,1,mandarin,3,81.82
+WebTask_CardSort_v2,88a049b1,2023-06-01-1720,"CH, Switzerland",46,2,2,2,5,12,2,1,"Italian, Spanish and French",3,55.56
+WebTask_CardSort_v2,b0798a36,2023-06-01-1825,"US, United States",22,2,2,2,6,9,1,2,,4,60
+WebTask_CardSort_v2,450af0e8,2023-06-01-1859,"US, United States",27,2,2,2,5,9,1,2,,1,90
+WebTask_CardSort_v2,91468fb8,2023-06-01-2116,"US, United States",22,2,2,2,6,9,1,1,French,2,52.94
+WebTask_CardSort_v2,d541e4c0,2023-06-02-1934,"US, United States",22,1,1,2,2,10,1,1,"Japanese, Chinese",2,80
+WebTask_CardSort_v2,46db6023,2023-06-02-2332,"US, United States",22,1,1,2,2,9,1,1,Korean,4,77.78
+WebTask_CardSort_v2,54d4291b,2023-06-03-2333,"US, United States",41,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,d6dead27,2023-06-04-0547,"US, United States",22,2,2,2,2,9,2,1,Chinese,2,60
+WebTask_CardSort_v2,7f2bf12c,2023-06-05-0616,"US, United States",,4,5,3,8,8,1,2,,4,12.5
+WebTask_CardSort_v2,beb01630,2023-06-05-0749,"US, United States",22,2,2,2,2,10,1,1,Chinese,3,77.78
+WebTask_CardSort_v2,66fab246,2023-06-05-0802,"US, United States",22,2,2,2,2,9,2,1,Mandarin ,3,100
+WebTask_CardSort_v2,e9957f47,2023-06-05-0815,"US, United States",39,2,2,2,2,13,1,1,"Urdu, Punjabi, Persian",3,90
+WebTask_CardSort_v2,117d6806,2023-06-05-0945,"US, United States",22,2,2,2,2,10,1,1,Chinese,3,77.78
+WebTask_CardSort_v2,36345909,2023-06-05-2337,"US, United States",23,2,2,2,2,10,2,1,Korean,2,75
+WebTask_CardSort_v2,90fd8c3c,2023-06-11-0908,"AU, Australia",52,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,90db8365,2023-06-12-1541,"US, United States",58,2,2,2,5,10,1,2,,1,-100
+WebTask_CardSort_v2,1aa15bd9,2023-06-13-0908,"CA, Canada",25,2,2,2,5,11,1,2,,1,-76.47
+WebTask_CardSort_v2,400eed91,2023-06-14-0329,"US, United States",21,2,2,2,2,10,1,1,Mandarin,2,50
+WebTask_CardSort_v2,61f78fb4,2023-06-15-2247,"US, United States",42,2,2,2,5,10,1,2,,1,100
+WebTask_CardSort_v2,2e5e60b7,2023-06-17-2052,"US, United States",33,2,2,1,5,12,1,1,Spanish,1,68.42
+WebTask_CardSort_v2,f85a3e1b,2023-06-19-0031,"US, United States",34,2,2,2,5,10,1,2,,1,44.44
+WebTask_CardSort_v2,7c99f480,2023-06-19-1659,"US, United States",32,2,2,2,5,12,1,2,,1,-80
+WebTask_CardSort_v2,98424747,2023-06-23-0421,"CA, Canada",32,2,2,2,5,8,1,2,,1,89.47
+WebTask_CardSort_v2,99056ad5,2023-06-23-1516,"AR, Argentina",66,2,2,3,5,16,2,1,Spanish,1,100
+WebTask_CardSort_v2,fdecdf48,2023-06-28-1419,"DE, Germany",15,2,2,2,5,3,2,1,german,3,100
+WebTask_CardSort_v2,c5f1529a,2023-06-28-2205,"US, United States",45,2,2,2,5,6,1,2,,1,89.47
+WebTask_CardSort_v2,1ea6c7bb,2023-06-28-2211,"CA, Canada",32,1,1,2,5,6,1,2,,1,78.95
+WebTask_CardSort_v2,28a198fb,2023-07-01-0121,"CA, Canada",15,2,2,2,2,4,1,1,Mandarin,2,85.71
+WebTask_CardSort_v2,5ee0a865,2023-07-01-2237,"CA, Canada",15,2,2,2,2,3,1,2,,1,76.47
+WebTask_CardSort_v2,9cabc628,2023-07-02-1610,"CA, Canada",62,2,2,2,5,5,1,2,,1,60
+WebTask_CardSort_v2,ae6e621d,2023-07-07-0337,"US, United States",33,2,2,2,5,14,1,2,,1,100
+WebTask_CardSort_v2,a4e92a6d,2023-07-09-1652,"DE, Germany",52,2,2,2,5,6,2,1,German,2,100
+WebTask_CardSort_v2,0cf98284,2023-07-13-2225,"US, United States",45,2,2,2,5,9,1,2,,1,100
+WebTask_CardSort_v2,32308591,2023-07-15-0552,"AU, Australia",35,2,2,2,2,11,2,1,creole,2,100
+WebTask_CardSort_v2,3456c8ae,2023-07-15-0558,"AU, Australia",35,4,5,3,8,11,1,2,,3,100
+WebTask_CardSort_v2,0aef8687,2023-07-15-2308,"US, United States",63,2,2,2,2,12,2,1,Chinese,1,100
+WebTask_CardSort_v2,d9a70fac,2023-07-15-2316,"US, United States",63,2,2,2,2,12,2,1,chinese,1,90
+WebTask_CardSort_v2,cac5cbcc,2023-07-16-1045,"AU, Australia",38,2,2,2,5,12,1,2,,1,100
+WebTask_CardSort_v2,08f746fa,2023-07-18-2029,"DE, Germany",38,2,2,2,5,16,2,1,German,3,100
+WebTask_CardSort_v2,17d323d9,2023-07-19-1516,"US, United States",46,2,2,2,5,15,1,2,,1,73.33
+WebTask_CardSort_v2,2589c6ec,2023-07-22-2342,"US, United States",36,2,2,2,5,8,1,2,,1,41.18
+WebTask_CardSort_v2,53124fc7,2023-07-25-1510,"US, United States",31,2,2,2,5,8,1,1,,4,66.67
+WebTask_CardSort_v2,d84d792b,2023-07-30-1133,"GR, Greece",58,2,2,2,5,12,1,1,"Lithuanian, Greek",2,64.71
+WebTask_CardSort_v2,214a186c,2023-08-13-0322,"US, United States",54,2,2,2,5,14,2,1,"german, persian, french",3,66.67
+WebTask_CardSort_v2,714b2d11,2023-08-20-2151,"BR, Brazil",37,2,2,2,5,17,2,1,Portuguese,2,100
+WebTask_CardSort_v2,66cfde31,2023-08-21-2125,"US, United States",56,2,2,2,5,10,1,2,,1,-100
+WebTask_CardSort_v2,fa217a97,2023-08-24-1408,"AU, Australia",70,1,1,2,2,10,2,1,Vietnamese,1,100
+WebTask_CardSort_v2,7c320256,2023-08-28-1838,"BR, Brazil",24,2,3,1,5,14,1,2,,2,40
+WebTask_CardSort_v2,2dc7132a,2023-08-28-1833,"US, United States",38,2,2,2,5,10,1,2,,1,88.24
+WebTask_CardSort_v2,c6dec119,2023-09-01-1710,"US, United States",21,2,2,2,5,7,1,2,,1,25
+WebTask_CardSort_v2,1d937134,2023-09-04-2058,"NL, Netherlands",34,2,4,2,5,10,1,2,,1,78.95
+WebTask_CardSort_v2,88f5e293,2023-09-06-2124,"US, United States",49,2,2,2,5,13,1,2,,1,80
+WebTask_CardSort_v2,0156ce12,2023-09-12-2254,"US, United States",51,2,2,2,5,15,1,2,,1,80
+WebTask_CardSort_v2,ea946a6b,2023-09-13-2046,"PT, Portugal",30,2,2,1,5,13,2,1,Portuguese,3,28.57
+WebTask_CardSort_v2,86655f6c,2023-09-13-2343,"BR, Brazil",29,2,2,1,5,15,2,1,Portugues,1,40
+WebTask_CardSort_v2,b8f82017,2023-09-18-1105,"PT, Portugal",39,2,2,1,5,10,2,1,Portuguese,3,90
+WebTask_CardSort_v2,bad632c6,2023-09-20-1803,"US, United States",38,1,1,2,2,12,2,1,Thai,2,100
+WebTask_CardSort_v2,297c34a5,2023-09-25-1914,"US, United States",44,2,2,2,2,10,2,1,Korean (but no longer speaking),1,64.71
