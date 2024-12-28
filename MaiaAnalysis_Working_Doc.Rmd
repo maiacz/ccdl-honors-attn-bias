@@ -137,15 +137,15 @@ data %>%
   ggtitle("Distribution of Congruency RT")
 
 # Split groups based on bias score
-biased <- subset(data, data$BiasScore > 0.8 | data$BiasScore < -0.8)
-neutral <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
+biased_data <- subset(data, data$BiasScore > 0.8 | data$BiasScore < -0.8)
+neutral_data <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
 
 # add group labels
-biased$AttentionGroup = "biased"
-neutral$AttentionGroup = "neutral"
+biased_data$AttentionGroup = "biased"
+neutral_data$AttentionGroup = "neutral"
 
 # bind back together
-data_grouped <- rbind(biased, neutral)
+data_grouped <- rbind(biased_data, neutral_data)
 
 data_grouped %>%
   ggplot(aes(x = BiasScore, fill = AttentionGroup))+ geom_vline(mapping = aes(xintercept = biasMean),
@@ -168,10 +168,10 @@ data_grouped %>%
   ggtitle("Distribution of Incongruent RT By Bias Group Split")
 
 # means for v-lines
-neutral_incon_mean = mean(neutral$InCon_RT)
-neutral_con_mean = mean(neutral$Con_RT)
-biased_incon_mean = mean(biased$InCon_RT)
-biased_con_mean = mean(biased$Con_RT)
+neutral_incon_mean = mean(neutral_data$InCon_RT)
+neutral_con_mean = mean(neutral_data$Con_RT)
+biased_incon_mean = mean(biased_data$InCon_RT)
+biased_con_mean = mean(biased_data$Con_RT)
 
 
 data_grouped %>%
