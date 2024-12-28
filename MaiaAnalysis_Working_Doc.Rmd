@@ -205,7 +205,7 @@ $\textbf{Distribution of Incongruency Effect by Bias Group Split}$: There are mo
 $\textbf{Congruent and Incongruent Distributions by Bias Group Split}$: Biased group seems to be taking less time than the neutral group in both trial types. Could be indication of biased attenders mainly paying attention to their preferred information processing style and ignoring the other stimulus so RTs are faster in both trial types.
 
 # Reaction Times by Trial Type and Attention
-```{r}
+```{r,message=FALSE}
 # Load necessary libraries
 library(tidyverse)
 library(ggplot2)
@@ -220,15 +220,15 @@ means <- data_grouped %>%
   pivot_longer(cols = c(Con_RT, InCon_RT), names_to = "Trial_Type", values_to = "RT")
 
 # Order factor levels for better plotting
-means$Attention <- factor(means$Attention, levels = unique(means$Attention))
+means$AttentionGroup <- factor(means$AttentionGroup, levels = unique(means$AttentionGroup))
 
-combined_long <- combined_data %>%
-  select(Attention, InCon_RT, Con_RT) %>%
+combined_long <- data_grouped %>%
+  select(AttentionGroup, InCon_RT, Con_RT) %>%
   pivot_longer(cols = c(InCon_RT, Con_RT), values_to = "RT", names_to = "Condition")
 
 # Creat error bars
 se_sum <- combined_long %>%
-  group_by(Attention, Condition) %>%
+  group_by(AttentionGroup, Condition) %>%
   summarise(
     sd = sd(RT),
     n = n(),
@@ -236,11 +236,8 @@ se_sum <- combined_long %>%
   ) %>%
   mutate(se = sd/sqrt(n))
 
-
-
 # Create bar plot
-
-ggplot(se_sum, aes(x = Attention, y = mean, fill = Condition)) +
+ggplot(se_sum, aes(x = AttentionGroup, y = mean, fill = Condition)) +
   geom_bar(position = position_dodge(0.8), stat = "identity", color = "black", size = 0.5, width = 0.8, alpha = 0.8) +
   geom_errorbar(aes(ymin = mean - se, ymax = mean + se), position = position_dodge(0.8), width = 0.25, color = "black") +
   labs(title = "Mean Reaction Times by Attention and Trial Type",
@@ -248,13 +245,11 @@ ggplot(se_sum, aes(x = Attention, y = mean, fill = Condition)) +
        y = "Mean Reaction Time (ms)") +
   theme_minimal()
 
-combined_long_wid <- combined_data %>%
-  select(Attention, InCon_RT, Con_RT, Subject) %>%
+combined_long_wid <- data_grouped %>%
+  select(AttentionGroup, InCon_RT, Con_RT, Subject) %>%
   pivot_longer(cols = c(InCon_RT, Con_RT), values_to = "RT", names_to = "Condition")
-
 ```
-#incon rts are larger overall, but the difference between incon and con trial rts for the biased group is a lot smaller than the neutral group- perhaps because the neutral group is noticing both stimuli more?
-#figure out how to put error bars
+Incongruent response times are larger overall, but the difference between incongruent and congruent trial response times for the biased group is a lot smaller than the neutral group. This may be because the neutral group is noticing both stimuli more.
 
 # Incongruency Effect Analysis
 
