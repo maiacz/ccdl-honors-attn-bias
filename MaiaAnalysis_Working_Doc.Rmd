@@ -141,14 +141,14 @@ biased <- subset(data, data$BiasScore > 0.8 | data$BiasScore < -0.8)
 neutral <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
 
 # add group labels
-biased$Group = "biased"
-neutral$Group = "neutral"
+biased$AttentionGroup = "biased"
+neutral$AttentionGroup = "neutral"
 
 # bind back together
 data_grouped <- rbind(biased, neutral)
 
 data_grouped %>%
-  ggplot(aes(x = BiasScore, fill = Group))+ geom_vline(mapping = aes(xintercept = biasMean),
+  ggplot(aes(x = BiasScore, fill = AttentionGroup))+ geom_vline(mapping = aes(xintercept = biasMean),
                                                        color = "red", linetype = "dashed",
                                                        linewidth = 1) +
   geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed",
@@ -158,12 +158,12 @@ data_grouped %>%
 Bias group (biased and neutral) distribution with mean (blue v-line) and median (red v-line) bias scores.
 ```{r}
 data_grouped %>%
-  ggplot(aes(x = Incon.ConRT, fill = Group, color = Group))+
+  ggplot(aes(x = Incon.ConRT, fill = AttentionGroup, color = AttentionGroup))+
   geom_density(alpha = 0.3)+
   ggtitle("Distribution of Incongruency RT Effects By Bias Group Split")
 
 data_grouped %>%
-  ggplot(aes(x = InCon_RT, fill = Group, color = Group))+
+  ggplot(aes(x = InCon_RT, fill = AttentionGroup, color = AttentionGroup))+
   geom_density(alpha = 0.3)+
   ggtitle("Distribution of Incongruent RT By Bias Group Split")
 
@@ -175,7 +175,7 @@ biased_con_mean = mean(biased$Con_RT)
 
 
 data_grouped %>%
-  ggplot(aes(x = InCon_RT, fill = Group, color = Group))+                                  
+  ggplot(aes(x = InCon_RT, fill = AttentionGroup, color = AttentionGroup))+                                  
   geom_density(alpha = 0.3)+
   geom_vline(mapping = aes(xintercept = neutral_incon_mean),
                                        color = "turquoise",
@@ -185,12 +185,12 @@ data_grouped %>%
   ggtitle("Distribution of Incongruent RT By Bias Group Split")
 
 data_grouped %>%
-  ggplot(aes(x = Con_RT, fill = Group, color = Group))+
+  ggplot(aes(x = Con_RT, fill = AttentionGroup, color = AttentionGroup))+
   geom_density(alpha = 0.3)+
   ggtitle("Distribution of Congruent RT By Bias Group Split")
 
 data_grouped %>%
-  ggplot(aes(x = Con_RT, fill = Group, color = Group))+
+  ggplot(aes(x = Con_RT, fill = AttentionGroup, color = AttentionGroup))+
   geom_density(alpha = 0.3)+
   geom_vline(mapping = aes(xintercept = neutral_con_mean), 
              color = "turquoise", linetype = "dashed", size = 1)+ 
@@ -204,29 +204,18 @@ $\textbf{Incongruency RT Effect Dist}$: Most people have an incongruency effect 
 $\textbf{Distribution of Incongruency Effect by Bias Group Split}$: There are more people who have a lower incongruency effect in the biased attender group than in the neutral attender group. Neutral attender group has a lot less people but its density is a lot more spread out while biased attender incongruency effect has a lot less range and is more concentrated near 0.\
 $\textbf{Congruent and Incongruent Distributions by Bias Group Split}$: Biased group seems to be taking less time than the neutral group in both trial types. Could be indication of biased attenders mainly paying attention to their preferred information processing style and ignoring the other stimulus so RTs are faster in both trial types.
 
-# Reaction times by trial type and attention
+# Reaction Times by Trial Type and Attention
 ```{r}
 # Load necessary libraries
 library(tidyverse)
 library(ggplot2)
 library(reshape2) 
 
-data$Attention <- ifelse(data$BiasScore > 0.8 | data$BiasScore < -0.8, "Biased", "Neutral")
-data$IPS <- ifelse(data$BiasScore > 0, "Verbal", "Visual")
-
-#Reaction times
-#Biased attender histograms and descriptive statistics
-biased_data<- data[data$Attention == "Biased", ]
-neutral_data<- data[data$Attention == "Neutral", ]
-
-# Combine biased and neutral data
-data$Attention <- ifelse(data$BiasScore > 0.8 | data$BiasScore < -0.8, "Biased", "Neutral")
-biased_data<- data[data$Attention == "Biased", ]
-combined_data <- rbind(biased_data, neutral_data)
+data_grouped$IPS <- ifelse(data_grouped$BiasScore > 0, "Verbal", "Visual")
 
 # Calculate means by attention and trial type
-means <- combined_data %>%
-  group_by(Attention) %>%
+means <- data_grouped %>%
+  group_by(AttentionGroup) %>%
   summarise(Con_RT = mean(Con_RT), InCon_RT = mean(InCon_RT)) %>%
   pivot_longer(cols = c(Con_RT, InCon_RT), names_to = "Trial_Type", values_to = "RT")
 
