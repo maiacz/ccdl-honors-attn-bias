@@ -327,11 +327,11 @@ library(ggplot2)
 combined_data <- rbind(biased_data, neutral_data)
 
 # Create box plot
-ggplot(combined_data, aes(x = Attention, y = Incongruency_Effect_Data, fill = Attention)) +
+ggplot(combined_data, aes(x = AttentionGroup, y = Incongruency_Effect_Data, fill = Attention)) +
   geom_boxplot() +
   labs(
     title = "Incongruency Effect Box Plot",
-    x = "Attention",
+    x = "Attention Group",
     y = "Incongruency Effect (ms)"
   ) +
   scale_fill_manual(values = c("red", "lightblue")) +  # Color for biased and neutral data
