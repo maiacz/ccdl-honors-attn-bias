@@ -119,39 +119,44 @@ Observation: There are a lot less people in the neutral group (center) than ther
 # Distributions of Incongruency Effect - Whole Group & Bias Split
 ```{r inconeffect_dist}
 # Whole group distribution of incongruency effect
-
 data %>%
   ggplot(aes(x=Incon.ConRT)) +
-  geom_histogram(fill = "grey", color = "black") +
+  geom_histogram(fill = "grey", color = "black", bins=30) +
   ggtitle("Distribution of Incongruency Rt Effects")
 
+# Incon trial response times histogram
 data %>%
   ggplot(aes(x=InCon_RT)) +
-  geom_histogram(fill = "grey", color = "black") +
+  geom_histogram(fill = "grey", color = "black", bins=30) +
   ggtitle("Distribution of Incongruency RT")
 
+# Con trial response times histogram
 data %>%
   ggplot(aes(x=Con_RT)) +
-  geom_histogram(fill = "grey", color = "black") +
+  geom_histogram(fill = "grey", color = "black", bins=30) +
   ggtitle("Distribution of Congruency RT")
-
-
 
 # Split groups based on bias score
 biased <- subset(data, data$BiasScore > 0.8 | data$BiasScore < -0.8)
 neutral <- subset(data, data$BiasScore <= 0.8 & data$BiasScore >= -0.8)
 
+# add group labels
 biased$Group = "biased"
 neutral$Group = "neutral"
 
+# bind back together
 data_grouped <- rbind(biased, neutral)
 
 data_grouped %>%
-  ggplot(aes(x = BiasScore, fill = Group))+ geom_vline(mapping = aes(xintercept = biasMean), color = "red", linetype = "dashed", size = 1) +
-  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed", size = 1) +
-  geom_histogram(color="black") + ggtitle("Bias Group Split Distribution")
-
-
+  ggplot(aes(x = BiasScore, fill = Group))+ geom_vline(mapping = aes(xintercept = biasMean),
+                                                       color = "red", linetype = "dashed",
+                                                       linewidth = 1) +
+  geom_vline(mapping = aes(xintercept = biasMedian), color = "blue", linetype = "dashed",
+             linewidth = 1) +
+  geom_histogram(color="black", bins=30) + ggtitle("Bias Group Split Distribution")
+```
+Bias group (biased and neutral) distribution with mean (blue v-line) and median (red v-line) bias scores.
+```{r}
 data_grouped %>%
   ggplot(aes(x = Incon.ConRT, fill = Group, color = Group))+
   geom_density(alpha = 0.3)+
@@ -162,6 +167,7 @@ data_grouped %>%
   geom_density(alpha = 0.3)+
   ggtitle("Distribution of Incongruent RT By Bias Group Split")
 
+# means for v-lines
 neutral_incon_mean = mean(neutral$InCon_RT)
 neutral_con_mean = mean(neutral$Con_RT)
 biased_incon_mean = mean(biased$InCon_RT)
@@ -170,7 +176,12 @@ biased_con_mean = mean(biased$Con_RT)
 
 data_grouped %>%
   ggplot(aes(x = InCon_RT, fill = Group, color = Group))+                                  
-  geom_density(alpha = 0.3)+geom_vline(mapping = aes(xintercept = neutral_incon_mean), color = "turquoise", linetype = "dashed", size = 1)+ geom_vline(mapping = aes(xintercept = biased_incon_mean), color = "magenta", linetype = "dashed", size = 1)+
+  geom_density(alpha = 0.3)+
+  geom_vline(mapping = aes(xintercept = neutral_incon_mean),
+                                       color = "turquoise",
+                                       linetype = "dashed", linewidth = 1)+ 
+  geom_vline(mapping = aes(xintercept = biased_incon_mean), color = "magenta", 
+             linetype = "dashed", linewidth = 1)+
   ggtitle("Distribution of Incongruent RT By Bias Group Split")
 
 data_grouped %>%
@@ -180,14 +191,18 @@ data_grouped %>%
 
 data_grouped %>%
   ggplot(aes(x = Con_RT, fill = Group, color = Group))+
-  geom_density(alpha = 0.3)+geom_vline(mapping = aes(xintercept = neutral_con_mean), color = "turquoise", linetype = "dashed", size = 1)+ geom_vline(mapping = aes(xintercept = biased_con_mean), color = "magenta", linetype = "dashed", size = 1)+
+  geom_density(alpha = 0.3)+
+  geom_vline(mapping = aes(xintercept = neutral_con_mean), 
+             color = "turquoise", linetype = "dashed", size = 1)+ 
+  geom_vline(mapping = aes(xintercept = biased_con_mean), color = "magenta", 
+             linetype = "dashed", size = 1)+
   ggtitle("Distribution of Congruent RT By Bias Group Split")
 
 
 ```
-#Incongruency RT Effect Dist: Most people have an incongruency effect of 0 or > so, as expected, incongruent trial reaction times are generally greater than congruent trial reaction times. Slight right skew that is made extreme by outliers- will reexamine with outliers removed.
-#Distribution of Incongruency Effect by Bias Group Split: There are more people who have a lower incongruency effect in the biased attender group than in the neutral attender group. Neutral attender group has a lot less people but its density is a lot more spread out while biased attender incongruency effect has a lot less range and is more concentrated near 0.
-#Congruent and Incongruent Distributions by Bias Group Split: Biased group seems to be taking less time than the neutral group in both trial types. Could be indication of biased attenders mainly paying attention to their preferred information processing style and ignoring the other stimulus so RTs are faster in both trial types.
+$\textbf{Incongruency RT Effect Dist}$: Most people have an incongruency effect of 0 or > so, as expected, incongruent trial reaction times are generally greater than congruent trial reaction times. Slight right skew that is made extreme by outliers- will reexamine with outliers removed.\
+$\textbf{Distribution of Incongruency Effect by Bias Group Split}$: There are more people who have a lower incongruency effect in the biased attender group than in the neutral attender group. Neutral attender group has a lot less people but its density is a lot more spread out while biased attender incongruency effect has a lot less range and is more concentrated near 0.\
+$\textbf{Congruent and Incongruent Distributions by Bias Group Split}$: Biased group seems to be taking less time than the neutral group in both trial types. Could be indication of biased attenders mainly paying attention to their preferred information processing style and ignoring the other stimulus so RTs are faster in both trial types.
 
 # Reaction times by trial type and attention
 ```{r}
